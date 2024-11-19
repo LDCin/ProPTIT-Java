@@ -1,20 +1,8 @@
-public class Admin {
+public class Guest {
     public LibraryManager libraryManager;
 
-    public Admin(LibraryManager libraryManager){
+    public Guest(LibraryManager libraryManager){
         this.libraryManager = libraryManager;
-    }
-
-    public void addBook(){
-        libraryManager.addBook();
-    }
-
-    public void deleteBook(){
-        libraryManager.deleteBook();
-    }
-
-    public void editBook(){
-        libraryManager.editBook();
     }
 
     public void searchBook(){
@@ -29,31 +17,18 @@ public class Admin {
         int repeat = 0;
         while (repeat == 0){
             System.out.println("Bạn có thể thực hiện các thao tác sau:");
-            System.out.println("1. Thêm sách");
-            System.out.println("2. Xóa sách");
-            System.out.println("3. Sửa sách");
-            System.out.println("4. Tìm sách");
-            System.out.println("5. Xem toàn bộ sách");
-            System.out.println("6. Dừng thao tác");
+            System.out.println("1. Tìm sách");
+            System.out.println("2. Xem toàn bộ sách");
             System.out.print("Vui lòng nhập lựa chọn của bạn: ");
             int choice = Integer.parseInt(ScannerManager.scanner.nextLine());
             switch (choice){
                 case 1:
-                    addBook();
-                    break;
-                case 2:
-                    deleteBook();
-                    break;
-                case 3:
-                    editBook();
-                    break;
-                case 4:
                     searchBook();
                     break;
-                case 5:
+                case 2:
                     showLibrary();
                     break;
-                case 6:
+                case 3:
                     repeat = 1;
                     break;
                 default:
