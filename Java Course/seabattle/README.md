@@ -25,10 +25,8 @@ The project was done by [Lê Đình Chuyên](https://github.com/LDCin), in the c
 
 ## Features
 
-- Player can play with computer
-- Player can play with another player
-- Player can choose game mode
-- ...
+- Player can only play with another player
+...
 
 ## Installation
 
