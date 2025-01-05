@@ -8,12 +8,13 @@ The project was done by [Lê Đình Chuyên](https://github.com/LDCin), in the c
 ## Tech Stack
 
 - [Java](https://www.java.com/en/) 
-- ...
-
 
 ## Software Design (UML)
+### Class Diagram
+![Class_Diagram drawio](https://github.com/user-attachments/assets/bee11ed3-3e8b-4a58-8f7c-4b5eafe7ffa4)
 
-- ...
+### Activity Diagram
+![Activity_Class drawio](https://github.com/user-attachments/assets/ac4c53c3-9a2e-4114-99a7-e868994dcf36)
 
 ## Demo Video
 
