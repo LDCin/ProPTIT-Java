@@ -44,7 +44,7 @@ public class MenuGame {
 //            e.printStackTrace();
 //        }
         System.out.print("\n                                                                                                         ");
-//        printTextWithDot("Game Starting");
+        printTextWithDot("Game Starting");
         System.out.print("\n");
     }
 
