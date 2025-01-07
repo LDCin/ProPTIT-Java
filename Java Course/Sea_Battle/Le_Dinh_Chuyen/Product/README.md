@@ -21,22 +21,24 @@ The project was done by [Lê Đình Chuyên](https://github.com/LDCin), in the c
 
 ## Demo Video
 
-- ...
+- Link video: https://youtu.be/dqpc9xiHd6w?si=gQP_0RAiPPWQpIpw
 
 ## Demo Image
+![image](https://github.com/user-attachments/assets/dc27aa62-69c1-4637-be0a-14b71d202b0d)
+![image](https://github.com/user-attachments/assets/506e9b51-7d9f-48ca-bdf7-49a35aadf545)
+![image](https://github.com/user-attachments/assets/6bb67d11-2589-4b94-8822-11581992162f)
+![image](https://github.com/user-attachments/assets/2a232c7d-a490-4cd5-ab68-b4524251b593)
 
-- ...
 
 ## Features
 
-- Player can play with computer
+- Player can play with other player
 
 ## Installation
 
 - Clone the repo
 - Open the project in your IDE
 - Run the project
-
 
 ## Usage
 
