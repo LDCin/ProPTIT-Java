@@ -86,13 +86,10 @@ public class Board {
 
     public void showOwnBoard() {
         System.out.println("Your Board:");
-        System.out.print("   "); // Căn lề cho hàng đầu tiên
-//        for (int i = 0; i < this.size; i++) {
-//            System.out.printf("| %2d  ", i); // In số cột với định dạng độ rộng cố định
-//        }
-        System.out.println("|  0 |  1  |  2 |  3 |  4 |  5  |  6 |  7 |  8 |  9  |");
+        System.out.print("   ");
+        System.out.println("|  0 |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 |");
         for (int i = 0; i < this.size; i++) {
-            System.out.printf("%2s ", (char) (i + 'a')); // In chữ cái hàng với căn chỉnh độ rộng
+            System.out.printf("%2s ", (char) (i + 'a'));
             for (int j = 0; j < this.size; j++) {
                 if (grid[i][j].occupied()) {
                     if (grid[i][j].status()) {
@@ -113,27 +110,19 @@ public class Board {
 
     public void showEnemyBoard(){
         System.out.println("Enemy's Board:");
-        System.out.print("   "); // Căn lề cho hàng đầu tiên
-//        for (int i = 0; i < this.size; i++) {
-//            System.out.printf("| %2d  ", i); // In số cột với định dạng độ rộng cố định
-//        }
-        System.out.println("|  0 |  1  |  2 |  3 |  4 |  5  |  6 |  7 |  8 |  9  |");
+        System.out.print("   ");
+        System.out.println("|  0 |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 |");
         for (int i = 0; i < this.size; i++) {
-            System.out.printf("%2s ", (char) (i + 'a')); // In chữ cái hàng với căn chỉnh độ rộng
+            System.out.printf("%2s ", (char) (i + 'a'));
             for (int j = 0; j < this.size; j++) {
-                if (grid[i][j].occupied()) {
-                    if (grid[i][j].status()) {
-                        System.out.print("| \u274C "); // ❌
-                    } else {
-                        System.out.print("| \uD83D\uDEA2 "); // 🚢
-                    }
-                } else if (grid[i][j].status()) {
-                    System.out.print("| \uD83D\uDCA5 "); // 💥
+                if (grid[i][j].status()) {
+                    if (grid[i][j].occupied()) System.out.print("| \u274C "); // ❌
+                    else System.out.print("| \uD83D\uDCA5 "); // 💥
                 } else {
                     System.out.print("| \uD83C\uDF0A "); // 🌊
                 }
             }
-            System.out.println("|"); // Đóng hàng
+            System.out.println("|");
         }
     }
 

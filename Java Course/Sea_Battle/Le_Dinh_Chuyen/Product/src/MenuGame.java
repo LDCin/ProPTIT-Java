@@ -5,7 +5,7 @@ public class MenuGame {
         try {
             for (int j = 0; j < 3; j++) {
                 for (int i = 0; i <= 3; i++) {
-                    System.out.print("\033[2K\r" + text + ".".repeat(i));
+                    System.out.print("\033[2K\r                                                                                                         " + text + ".".repeat(i));
                     Thread.sleep(500);
                 }
             }
@@ -35,16 +35,7 @@ public class MenuGame {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-//        System.out.print("\n                                                                                                     ");
-//        System.out.println("Press Enter to start...");
-//
-//        try {
-//            System.in.read();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        System.out.print("\n                                                                                                         ");
-//        printTextWithDot("Game Starting");
+        printTextWithDot("Game Starting");
         System.out.print("\n");
     }
 

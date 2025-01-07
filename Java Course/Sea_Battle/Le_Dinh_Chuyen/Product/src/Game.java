@@ -24,9 +24,7 @@ public class Game {
     public void attack(Player player1, Player player2){
         player2.showEnemyBoard();
         if (player1.attack(player2)) {
-            if (player2.getOwnBoard().checkSunk()) {
-                System.out.println("Tàu đã bị chìm!");
-            }
+            if (player2.getOwnBoard().checkSunk()) return;
         }
         else attack(player1, player2);
     }
@@ -85,9 +83,9 @@ public class Game {
                 player2.setEnemyBoard(player1.getOwnBoard());
             }
         }
-        System.out.println("                                  Game Over!");
+        System.out.println("Game Over!");
         System.out.println("Play Again?");
-        System.out.println("1. Yes\n 2. No");
+        System.out.println("1. Yes\n2. No");
         int choiceRestart = Integer.parseInt(ScannerManager.scanner.nextLine());
         MenuGame.clearScreen();
         if (choiceRestart == 1) playGame();
