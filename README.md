@@ -1,2 +1,0 @@
-# ProPTIT-Java
-Java Course
