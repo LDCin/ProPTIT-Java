@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane fx:id="root" prefHeight="375.0" prefWidth="700.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="controller.ProAwardCraftController">
+  <top>
+    <MenuBar>
+      <Menu text="Menu">
+        <MenuItem onAction="#handleQuickCertificate" text="Quick Certificate" />
+        <MenuItem onAction="#handleCustomCertificate" text="Custom Certificate" />
+        <MenuItem onAction="#handleProductManage" text="Product Manage" />
+        <MenuItem onAction="#handleQuit" text="Quit App" />
+      </Menu>
+    </MenuBar>
+  </top>
+  <center>
+    <ImageView fx:id="imageView" fitWidth="700" preserveRatio="true" />
+  </center>
+</BorderPane>
