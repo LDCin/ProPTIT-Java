@@ -103,7 +103,7 @@ public class Board {
                     System.out.print("| \uD83C\uDF0A "); // 🌊
                 }
             }
-            System.out.println("|"); // Đóng hàng
+            System.out.println("|");
         }
     }
 

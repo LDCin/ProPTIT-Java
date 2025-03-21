@@ -1,0 +1,86 @@
+/* Tùy chỉnh toàn bộ giao diện */
+.root {
+    -fx-font-family: "Arial";
+    -fx-background-color: #f5f5f5; /* Nền tổng thể xám nhạt */
+}
+
+/* Thanh công cụ trên cùng (HBox) */
+.top-hbox {
+    -fx-background-color: linear-gradient(to bottom, #0078D4, #005BB5); /* Gradient từ xanh dương nhạt đến đậm */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0, 0, 2); /* Bóng đổ */
+    -fx-padding: 5;
+}
+
+/* MenuBar */
+.menu-bar {
+    -fx-background-color: transparent; /* Nền trong suốt để hiển thị gradient của HBox */
+    -fx-text-fill: white;
+}
+
+/* Menu và MenuItem */
+.menu .label {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+.menu-item .label {
+    -fx-text-fill: black; /* Chữ trong MenuItem là màu đen khi mở menu */
+    -fx-font-size: 13px;
+}
+
+.menu-item:hover {
+    -fx-background-color: #E0E0E0; /* Hiệu ứng hover cho MenuItem */
+}
+
+/* Label trong HBox (Tiêu đề "Thiết kế bằng khen - ProAwardCraft") */
+.top-label {
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+/* Khu vực trung tâm (AnchorPane) */
+.workspace {
+    -fx-background-color: white;
+    -fx-border-color: #D0D0D0; /* Viền xám nhạt */
+    -fx-border-width: 1;
+    -fx-border-radius: 5; /* Bo góc viền */
+    -fx-background-radius: 5; /* Bo góc nền */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 2); /* Bóng đổ nhẹ */
+}
+
+/* Khu vực bên phải (VBox) */
+.right-vbox {
+    -fx-background-color: #E8ECEF; /* Nền xám nhạt hơn */
+    -fx-padding: 15;
+    -fx-spacing: 10;
+    -fx-border-color: #D0D0D0;
+    -fx-border-width: 0 0 0 1; /* Chỉ có viền trái */
+}
+
+/* Nút trong VBox */
+.button {
+    -fx-background-color: #FFFFFF; /* Nền trắng */
+    -fx-text-fill: #0078D4; /* Chữ xanh dương */
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-border-color: #0078D4; /* Viền xanh dương */
+    -fx-border-width: 1;
+    -fx-border-radius: 5; /* Bo góc viền */
+    -fx-background-radius: 5; /* Bo góc nền */
+    -fx-padding: 8 15 8 15; /* Padding để nút rộng hơn */
+    -fx-cursor: hand; /* Con trỏ chuột dạng tay khi hover */
+}
+
+/* Hiệu ứng hover cho nút */
+.button:hover {
+    -fx-background-color: #0078D4; /* Nền xanh dương khi hover */
+    -fx-text-fill: white; /* Chữ trắng */
+    -fx-border-color: #005BB5; /* Viền đậm hơn */
+}
+
+/* Hiệu ứng khi nhấn nút */
+.button:pressed {
+    -fx-background-color: #005BB5; /* Nền đậm hơn khi nhấn */
+    -fx-text-fill: white;
+}

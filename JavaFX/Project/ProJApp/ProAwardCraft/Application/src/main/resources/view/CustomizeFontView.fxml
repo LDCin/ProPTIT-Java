@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
+<VBox alignment="CENTER" spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CustomizeFontController">
+    <!-- Chọn font -->
+    <Label text="Chọn font:" />
+    <ComboBox fx:id="fontCombo">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="Arial" />
+                <String fx:value="Times New Roman" />
+                <String fx:value="Courier New" />
+            </FXCollections>
+        </items>
+    </ComboBox>
+
+    <!-- Chọn kích thước font -->
+    <Label text="Kích thước font:" />
+    <ComboBox fx:id="fontSizeCombo">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="12" />
+                <String fx:value="14" />
+                <String fx:value="16" />
+                <String fx:value="18" />
+                <String fx:value="20" />
+                <String fx:value="24" />
+                <String fx:value="28" />
+                <String fx:value="32" />
+            </FXCollections>
+        </items>
+    </ComboBox>
+
+    <!-- Chữ đậm -->
+    <CheckBox fx:id="boldCheckBox" text="Chữ đậm" />
+
+    <!-- Chữ nghiêng -->
+    <CheckBox fx:id="italicCheckBox" text="Chữ nghiêng" />
+
+    <!-- Chọn kiểu căn lề -->
+    <Label text="Kiểu căn lề:" />
+    <ComboBox fx:id="alignmentCombo">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="Trái" />
+                <String fx:value="Giữa" />
+                <String fx:value="Phải" />
+                <String fx:value="Căn đều" />
+            </FXCollections>
+        </items>
+    </ComboBox>
+
+    <!-- Nút áp dụng -->
+    <Button text="Áp dụng" onAction="#handleApply" />
+</VBox>

@@ -31,10 +31,12 @@ public class MenuGame {
         }
 
         try {
-            Thread.sleep(1000); // Chờ 1 giây
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        System.out.println("Press Enter to start");
+        ScannerManager.scanner.nextLine();
         printTextWithDot("Game Starting");
         System.out.print("\n");
     }

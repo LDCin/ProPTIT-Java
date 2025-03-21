@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CustomCertificateController">
+    <GridPane hgap="10" vgap="10" alignment="CENTER">
+        <Label text="Tên người nhận:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="recipientNameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Tên giải thưởng:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="awardNameField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Tên chủ nhiệm:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="ownerNameField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <Label text="Màu viền:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <ColorPicker fx:id="frameColorPicker" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+        <Button text="Tạo chứng chỉ" onAction="#handleGenerate" GridPane.rowIndex="4" GridPane.columnIndex="1" GridPane.halignment="RIGHT"/>
+    </GridPane>
+</VBox>

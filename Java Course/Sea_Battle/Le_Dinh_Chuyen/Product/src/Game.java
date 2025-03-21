@@ -48,6 +48,8 @@ public class Game {
         int playChoice = Integer.parseInt(ScannerManager.scanner.nextLine());
         if (playChoice == 1) {
             player1.showOwnBoard();
+            System.out.println("Press Enter to continue");
+            ScannerManager.scanner.nextLine();
             playTurn(player1, player2);
         }
         else if (playChoice == 2) {

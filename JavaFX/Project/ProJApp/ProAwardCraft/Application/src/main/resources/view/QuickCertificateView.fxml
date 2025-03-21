@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.QuickCertificateController">
+    <Label text="Tên người nhận:" />
+    <TextField fx:id="recipientField" />
+    <Label text="Tên giải thưởng:" />
+    <TextField fx:id="awardField" />
+    <Button text="Tạo" onAction="#handleGenerate" />
+</VBox>
