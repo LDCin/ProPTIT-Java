@@ -1,4 +1,6 @@
-package model;
+package model.certificate;
+
+import model.element.TextComponent;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -13,9 +15,8 @@ public abstract class Certificate implements Serializable {
 
     protected String name;
     protected List<TextComponent> textComponents = new ArrayList<>();
-    protected List<CustomElement> customElements = new ArrayList<>();
 
-    protected String logoPath = "images/default_logo.png"; // Đường dẫn đến file logo
+    protected String logoPath = "images/logo/default_logo.png"; // Đường dẫn đến file logo
     protected int logoX = 230; // Vị trí X mặc định
     protected int logoY = 210; // Vị trí Y mặc định
     protected double logoWidth = 40; // Chiều rộng mặc định
@@ -71,18 +72,6 @@ public abstract class Certificate implements Serializable {
 
     public abstract String getRecipientName();
     public abstract String getAwardName();
-
-    public List<CustomElement> getCustomElements() {
-        return customElements;
-    }
-
-    public void addCustomElement(CustomElement element) {
-        customElements.add(element);
-    }
-
-    public void removeCustomElement(String id) {
-        customElements.removeIf(element -> element.getId().equals(id));
-    }
 
     public abstract BufferedImage generateImage();
 

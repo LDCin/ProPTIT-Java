@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ProductManageController">
+<VBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.product.ProductManageController">
     <Label text="Quản lý sản phẩm" style="-fx-font-size: 16px; -fx-padding: 10;" />
     <ListView fx:id="productList" />
     <Button text="Xóa sản phẩm" onAction="#handleDelete" />

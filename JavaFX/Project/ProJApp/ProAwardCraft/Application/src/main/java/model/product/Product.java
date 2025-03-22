@@ -1,4 +1,6 @@
-package model;
+package model.product;
+
+import model.certificate.Certificate;
 
 import java.util.Date;
 import java.io.Serializable;

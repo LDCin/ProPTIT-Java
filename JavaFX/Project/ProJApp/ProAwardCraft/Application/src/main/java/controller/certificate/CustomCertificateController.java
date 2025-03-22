@@ -1,5 +1,6 @@
-package controller;
+package controller.certificate;
 
+import controller.main.MainController;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -9,7 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import model.CustomCertificate;
+import model.certificate.CustomCertificate;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

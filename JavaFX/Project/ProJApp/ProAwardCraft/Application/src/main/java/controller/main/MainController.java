@@ -1,6 +1,8 @@
-package controller;
+package controller.main;
 
-import javafx.embed.swing.SwingFXUtils;
+import controller.certificate.CustomCertificateController;
+import controller.product.ProductManageController;
+import controller.certificate.QuickCertificateController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
@@ -12,7 +14,6 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -26,7 +27,12 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import model.*;
+import model.certificate.Certificate;
+import model.certificate.CustomCertificate;
+import model.certificate.QuickCertificate;
+import model.element.TextComponent;
+import model.product.CertificateManager;
+import model.product.Product;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -75,7 +81,7 @@ public class MainController {
     @FXML
     private void handleQuickCertificate() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/QuickCertificateView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/certificate/QuickCertificateView.fxml"));
             Parent quickCertRoot = loader.load();
             QuickCertificateController controller = loader.getController();
             controller.setMainController(this);
@@ -95,7 +101,7 @@ public class MainController {
     @FXML
     private void handleCustomCertificate() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/CustomCertificateView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/certificate/CustomCertificateView.fxml"));
             Parent customCertRoot = loader.load();
             CustomCertificateController controller = loader.getController();
             controller.setMainController(this);
@@ -115,7 +121,7 @@ public class MainController {
     @FXML
     private void handleProductManage() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ProductManageView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/product/ProductManageView.fxml"));
             Parent productManageRoot = loader.load();
             ProductManageController controller = loader.getController();
             controller.setMainController(this);
@@ -192,7 +198,7 @@ public class MainController {
 
             Optional<String> result = dialog.showAndWait();
             result.ifPresent(name -> {
-                String filename = "cert_images/export_" + name + ".png";
+                String filename = "cert_images/" + name + ".png";
                 BufferedImage image = generateImageFromWorkspace();
                 try {
                     File outputFile = new File(filename);

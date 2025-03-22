@@ -1,15 +1,14 @@
-package controller;
+package controller.product;
 
+import controller.main.MainController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
-import model.Certificate;
-import model.CertificateManager;
-import model.Product;
+import model.product.CertificateManager;
+import model.product.Product;
 import javafx.collections.FXCollections;
 
 import java.awt.image.BufferedImage;

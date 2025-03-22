@@ -1,8 +1,9 @@
-package controller;
+package controller.customize;
 
+import controller.main.MainController;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import model.TextComponent;
+import model.element.TextComponent;
 import java.util.Arrays;
 
 public class CustomizeFontController {

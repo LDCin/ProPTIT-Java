@@ -13,9 +13,9 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="root" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
+<BorderPane fx:id="root" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.main.MainController">
     <stylesheets>
-        <URL value="@style.css" />
+        <URL value="@../style.css" />
     </stylesheets>
 
     <!-- Thanh công cụ trên cùng -->
@@ -76,7 +76,7 @@
 
     <!-- Khu vực bên phải (thanh công cụ) -->
     <right>
-        <VBox minWidth="121.0" prefHeight="560.0" prefWidth="198.0" styleClass="right-vbox">
+        <VBox minWidth="121.0" prefHeight="539.0" prefWidth="213.0" styleClass="right-vbox">
             <Button accessibleRole="MENU_ITEM" onAction="#handleSaveCertificate" text="Lưu sản phẩm" />
             <Button onAction="#handleExport" text="Xuất File" />
             <!-- Xóa các thành phần liên quan đến logo và màu sắc -->

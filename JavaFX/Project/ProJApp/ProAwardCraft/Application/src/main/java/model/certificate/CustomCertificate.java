@@ -1,4 +1,6 @@
-package model;
+package model.certificate;
+
+import model.element.TextComponent;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

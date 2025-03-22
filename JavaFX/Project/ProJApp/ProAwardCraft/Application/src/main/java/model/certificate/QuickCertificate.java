@@ -1,24 +1,47 @@
-package model;
+package model.certificate;
+
+import model.template.Template;
+import model.element.TextComponent;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 
 public class QuickCertificate extends Certificate {
     private static final long serialVersionUID = 1L;
 
     private String frameColor;
-    private String backgroundColor = "#FFFFFF"; // Thêm thuộc tính backgroundColor, mặc định là trắng
+    private String backgroundColor;
 
-    public QuickCertificate(String recipientName, String awardName) {
+    public QuickCertificate(String recipientName, String awardName, Template template) {
         super(recipientName, awardName);
-        this.frameColor = "#000000";
-        getTextComponents().add(new TextComponent("owner", "EFGH", "Phải", 450, 270));
+        // Áp dụng thuộc tính từ Template
+        this.frameColor = template.getFrameColor();
+        this.backgroundColor = template.getBackgroundColor();
+
+        // Xóa các thành phần văn bản mặc định và sử dụng từ Template
+        getTextComponents().clear();
+        for (TextComponent component : template.getTextComponents().values()) {
+            TextComponent newComponent = new TextComponent(
+                    component.getType(),
+                    component.getText(),
+                    component.getAlignment(),
+                    component.getX(),
+                    component.getY()
+            );
+            newComponent.setFont(component.getFontName(), component.getFontSize(), component.isBold(), component.isItalic(), component.getAlignment());
+            getTextComponents().add(newComponent);
+        }
+
+        // Cập nhật nội dung cho recipient và award
+        setTextComponent("recipient", recipientName);
+        setTextComponent("award", "Giải thưởng: " + awardName);
+        setTextComponent("owner", "EFGH");
+
         // Thiết lập logo mặc định
-        String defaultLogoPath = "images/default_logo.png";
+        String defaultLogoPath = "images/logo/default_logo.png";
         try {
             System.out.println("Đang tìm logo mặc định tại: " + defaultLogoPath);
             java.net.URL logoUrl = getClass().getClassLoader().getResource(defaultLogoPath);
@@ -87,7 +110,6 @@ public class QuickCertificate extends Certificate {
         this.frameColor = frameColor;
     }
 
-    // Thêm getter và setter cho backgroundColor
     public String getBackgroundColor() {
         return backgroundColor;
     }

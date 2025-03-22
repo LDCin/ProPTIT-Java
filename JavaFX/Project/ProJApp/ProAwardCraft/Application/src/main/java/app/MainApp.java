@@ -10,10 +10,10 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/main/MainView.fxml"));
         Parent root = loader.load();
         primaryStage.setTitle("ProAwardCraft");
-        primaryStage.setScene(new Scene(root, 1000, 1000));
+        primaryStage.setScene(new Scene(root, 1500, 1000));
         primaryStage.show();
     }
 
