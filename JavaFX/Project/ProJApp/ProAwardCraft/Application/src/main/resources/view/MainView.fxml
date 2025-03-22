@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
@@ -12,7 +13,6 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<?import java.net.URL?>
 <BorderPane fx:id="root" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
     <stylesheets>
         <URL value="@style.css" />
@@ -20,7 +20,7 @@
 
     <!-- Thanh công cụ trên cùng -->
     <top>
-        <HBox styleClass="top-hbox" alignment="CENTER" spacing="10">
+        <HBox alignment="CENTER" spacing="10" styleClass="top-hbox">
             <MenuBar styleClass="menu-bar">
                 <menus>
                     <Menu mnemonicParsing="false" text="File">
@@ -37,7 +37,21 @@
                     </Menu>
                     <Menu mnemonicParsing="false" text="Edit">
                         <items>
-                            <MenuItem mnemonicParsing="false" onAction="#handleCustomizeFont" text="Tùy chỉnh font" />
+                            <!-- Menu con cho Logo -->
+                            <Menu mnemonicParsing="false" text="Logo">
+                                <items>
+                                    <MenuItem mnemonicParsing="false" onAction="#handleUpdateLogoSize" text="Cập nhật kích thước logo" />
+                                    <MenuItem mnemonicParsing="false" onAction="#handleChangeLogo" text="Thay đổi Logo" />
+                                    <MenuItem mnemonicParsing="false" onAction="#handleCheckLogo" text="Kiểm tra Logo" />
+                                </items>
+                            </Menu>
+                            <!-- Menu con cho Màu sắc -->
+                            <Menu mnemonicParsing="false" text="Màu sắc">
+                                <items>
+                                    <MenuItem mnemonicParsing="false" onAction="#handleFrameColorChange" text="Màu khung" />
+                                    <MenuItem mnemonicParsing="false" onAction="#handleBackgroundColorChange" text="Màu nền" />
+                                </items>
+                            </Menu>
                         </items>
                     </Menu>
                     <Menu mnemonicParsing="false" text="Help">
@@ -62,9 +76,10 @@
 
     <!-- Khu vực bên phải (thanh công cụ) -->
     <right>
-        <VBox styleClass="right-vbox" minWidth="121.0" prefHeight="560.0" prefWidth="198.0">
+        <VBox minWidth="121.0" prefHeight="560.0" prefWidth="198.0" styleClass="right-vbox">
             <Button accessibleRole="MENU_ITEM" onAction="#handleSaveCertificate" text="Lưu sản phẩm" />
             <Button onAction="#handleExport" text="Xuất File" />
+            <!-- Xóa các thành phần liên quan đến logo và màu sắc -->
         </VBox>
     </right>
 </BorderPane>

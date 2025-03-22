@@ -1,59 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
 <?import java.lang.String?>
+<VBox alignment="CENTER" prefHeight="400.0" prefWidth="300.0" spacing="10.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CustomizeFontController">
+    <Label text="Tùy chỉnh Font" styleClass="title-label" />
 
-<VBox alignment="CENTER" spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CustomizeFontController">
-    <!-- Chọn font -->
-    <Label text="Chọn font:" />
-    <ComboBox fx:id="fontCombo">
-        <items>
-            <FXCollections fx:factory="observableArrayList">
-                <String fx:value="Arial" />
-                <String fx:value="Times New Roman" />
-                <String fx:value="Courier New" />
-            </FXCollections>
-        </items>
-    </ComboBox>
+    <!-- Chọn thành phần văn bản -->
+    <Label text="Chọn thành phần:" />
+    <ComboBox fx:id="textComponentComboBox" prefWidth="150.0" />
 
-    <!-- Chọn kích thước font -->
+    <!-- Tên font -->
+    <Label text="Tên font:" />
+    <TextField fx:id="fontNameField" text="Arial" />
+
+    <!-- Kích thước font -->
     <Label text="Kích thước font:" />
-    <ComboBox fx:id="fontSizeCombo">
+    <Slider fx:id="fontSizeSlider" min="8" max="72" value="12" showTickLabels="true" showTickMarks="true" majorTickUnit="8" minorTickCount="1" />
+    <Label fx:id="fontSizeLabel" text="12" />
+
+    <!-- In đậm và in nghiêng -->
+    <HBox spacing="10.0">
+        <CheckBox fx:id="boldCheckBox" text="In đậm" />
+        <CheckBox fx:id="italicCheckBox" text="In nghiêng" />
+    </HBox>
+
+    <!-- Căn chỉnh -->
+    <Label text="Căn chỉnh:" />
+    <ComboBox fx:id="alignmentComboBox" prefWidth="150.0">
         <items>
-            <FXCollections fx:factory="observableArrayList">
-                <String fx:value="12" />
-                <String fx:value="14" />
-                <String fx:value="16" />
-                <String fx:value="18" />
-                <String fx:value="20" />
-                <String fx:value="24" />
-                <String fx:value="28" />
-                <String fx:value="32" />
-            </FXCollections>
+            <String fx:value="Trái" />
+            <String fx:value="Giữa" />
+            <String fx:value="Phải" />
         </items>
-    </ComboBox>
-
-    <!-- Chữ đậm -->
-    <CheckBox fx:id="boldCheckBox" text="Chữ đậm" />
-
-    <!-- Chữ nghiêng -->
-    <CheckBox fx:id="italicCheckBox" text="Chữ nghiêng" />
-
-    <!-- Chọn kiểu căn lề -->
-    <Label text="Kiểu căn lề:" />
-    <ComboBox fx:id="alignmentCombo">
-        <items>
-            <FXCollections fx:factory="observableArrayList">
-                <String fx:value="Trái" />
-                <String fx:value="Giữa" />
-                <String fx:value="Phải" />
-                <String fx:value="Căn đều" />
-            </FXCollections>
-        </items>
+        <value>
+            <String fx:value="Giữa" />
+        </value>
     </ComboBox>
 
     <!-- Nút áp dụng -->
-    <Button text="Áp dụng" onAction="#handleApply" />
+    <Button text="Áp dụng" onAction="#applyFontChanges" styleClass="apply-button" />
 </VBox>

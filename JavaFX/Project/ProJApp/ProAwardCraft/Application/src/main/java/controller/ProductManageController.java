@@ -93,6 +93,9 @@ public class ProductManageController {
             if (manager.removeProduct(selectedProduct)) {
                 refreshProductList();
 
+                // Xóa lựa chọn trong ListView để tránh tự động chọn sản phẩm khác
+                productList.getSelectionModel().clearSelection();
+
                 if (mainController.getCurrentCertificate() != null &&
                         mainController.getCurrentCertificate() == selectedProduct.getCertificate()) {
                     mainController.setCertificate(null);

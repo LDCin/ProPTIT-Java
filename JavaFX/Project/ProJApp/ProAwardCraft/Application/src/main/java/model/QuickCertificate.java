@@ -2,45 +2,98 @@ package model;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.Serializable;
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 
-public class QuickCertificate extends Certificate implements Serializable {
+public class QuickCertificate extends Certificate {
     private static final long serialVersionUID = 1L;
 
-    private Point recipientPosition = new Point(0, 0);
-    private Point awardPosition = new Point(0, 0);
-    private Rectangle recipientBounds;
-    private Rectangle awardBounds;
-    private String fontName = "Arial";
-    private Frame frame;
+    private String frameColor;
+    private String backgroundColor = "#FFFFFF"; // Thêm thuộc tính backgroundColor, mặc định là trắng
 
     public QuickCertificate(String recipientName, String awardName) {
         super(recipientName, awardName);
-        this.frame = new Frame("Solid", "0xFF0000");
-    }
-
-    public void setRecipientName(String name) { this.recipientName = name; }
-    public void setAwardName(String name) { this.awardName = name; }
-    public void setRecipientPosition(int x, int y) { this.recipientPosition.setLocation(x, y); }
-    public void setAwardPosition(int x, int y) { this.awardPosition.setLocation(x, y); }
-    public Point getRecipientPosition() { return recipientPosition; }
-    public Point getAwardPosition() { return awardPosition; }
-    public String getRecipientName() { return recipientName; }
-    public String getAwardName() { return awardName; }
-    public String getElementAt(int x, int y) {
-        if (recipientBounds != null && recipientBounds.contains(x, y)) {
-            System.out.println("Recipient detected at (" + x + ", " + y + ") within bounds: " + recipientBounds);
-            return "recipient";
-        } else if (awardBounds != null && awardBounds.contains(x, y)) {
-            System.out.println("Award detected at (" + x + ", " + y + ") within bounds: " + awardBounds);
-            return "award";
+        this.frameColor = "#000000";
+        getTextComponents().add(new TextComponent("owner", "EFGH", "Phải", 450, 270));
+        // Thiết lập logo mặc định
+        String defaultLogoPath = "images/default_logo.png";
+        try {
+            System.out.println("Đang tìm logo mặc định tại: " + defaultLogoPath);
+            java.net.URL logoUrl = getClass().getClassLoader().getResource(defaultLogoPath);
+            if (logoUrl == null) {
+                System.err.println("Không tìm thấy logo mặc định tại: " + defaultLogoPath);
+                System.err.println("Hãy đảm bảo file 'default_logo.png' được đặt trong thư mục 'src/main/resources/images/'");
+                System.err.println("Kiểm tra thư mục 'target/classes/images/' sau khi build để đảm bảo file đã được sao chép.");
+            } else {
+                this.logoPath = logoUrl.toExternalForm();
+                System.out.println("Đã tìm thấy logo mặc định tại: " + this.logoPath);
+                BufferedImage logoImage = ImageIO.read(logoUrl);
+                if (logoImage == null) {
+                    System.err.println("Không thể đọc file logo mặc định từ tài nguyên: " + defaultLogoPath);
+                    this.logoPath = null;
+                } else {
+                    double maxWidth = 480;
+                    double maxHeight = 280;
+                    double widthRatio = maxWidth / logoImage.getWidth();
+                    double heightRatio = maxHeight / logoImage.getHeight();
+                    double scale = Math.min(widthRatio, heightRatio);
+                    this.logoWidth = logoImage.getWidth() * scale;
+                    this.logoHeight = logoImage.getHeight() * scale;
+                    System.out.println("Đã thiết lập logo mặc định với kích thước: " + this.logoWidth + "x" + this.logoHeight);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Lỗi khi thiết lập logo mặc định từ tài nguyên: " + e.getMessage());
+            e.printStackTrace();
+            this.logoPath = null;
         }
-        System.out.println("No element detected at (" + x + ", " + y + ") - Recipient: " + recipientBounds + ", Award: " + awardBounds);
-        return null;
     }
 
-    public void setFont(String fontName) {
-        this.fontName = fontName;
+    @Override
+    public String getRecipientName() {
+        TextComponent component = getTextComponent("recipient");
+        return component != null ? component.getText() : "";
+    }
+
+    @Override
+    public String getAwardName() {
+        TextComponent component = getTextComponent("award");
+        return component != null ? component.getText().replace("Giải thưởng: ", "") : "";
+    }
+
+    public void setRecipientName(String recipientName) {
+        setTextComponent("recipient", recipientName);
+    }
+
+    public void setAwardName(String awardName) {
+        setTextComponent("award", "Giải thưởng: " + awardName);
+    }
+
+    public void setRecipientPosition(int x, int y) {
+        setTextPosition("recipient", x, y);
+    }
+
+    public void setAwardPosition(int x, int y) {
+        setTextPosition("award", x, y);
+    }
+
+    public String getFrameColor() {
+        return frameColor;
+    }
+
+    public void setFrameColor(String frameColor) {
+        this.frameColor = frameColor;
+    }
+
+    // Thêm getter và setter cho backgroundColor
+    public String getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    public void setBackgroundColor(String backgroundColor) {
+        this.backgroundColor = backgroundColor;
     }
 
     @Override
@@ -50,89 +103,50 @@ public class QuickCertificate extends Certificate implements Serializable {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = image.createGraphics();
 
-        try {
-            g2d.setColor(Color.WHITE);
-            g2d.fillRect(0, 0, width, height);
+        // Sử dụng backgroundColor để vẽ nền
+        g2d.setColor(Color.decode(backgroundColor));
+        g2d.fillRect(0, 0, width, height);
 
-            java.awt.Color frameColor = frame != null && frame.getColor() != null ?
-                    Color.decode(frame.getColor()) : Color.RED;
-            g2d.setColor(frameColor);
-            g2d.setStroke(new BasicStroke(5));
-            g2d.drawRect(10, 10, width - 20, height - 20);
+        g2d.setColor(Color.decode(frameColor));
+        g2d.setStroke(new BasicStroke(5));
+        g2d.drawRect(10, 10, 480, 280);
 
-            int style = Font.PLAIN;
-            if (isBold) style |= Font.BOLD;
-            if (isItalic) style |= Font.ITALIC;
-            Font font = new Font(fontName, style, fontSize);
-            g2d.setFont(font);
-            FontMetrics metrics = g2d.getFontMetrics(font);
-
-            String title = "GIẤY CHỨNG NHẬN";
-            int titleWidth = metrics.stringWidth(title);
-            g2d.setColor(Color.RED);
-            g2d.drawString(title, (width - titleWidth) / 2, 50);
-
-            String transition = "Được trao cho";
-            int transitionWidth = metrics.stringWidth(transition);
-            g2d.setColor(Color.GRAY);
-            g2d.drawString(transition, (width - transitionWidth) / 2, 80);
-
-            String recipientText = recipientName != null ? recipientName : "";
-            int recipientWidth = metrics.stringWidth(recipientText);
-            if (recipientPosition.x == 0 && recipientPosition.y == 0) {
-                recipientPosition.setLocation((width - recipientWidth) / 2, 120);
-            }
-            g2d.setColor(Color.RED);
-            g2d.drawString(recipientText, recipientPosition.x, recipientPosition.y);
-
-            String description = "là thành viên xuất sắc của CLB Lập trình PTIT.";
-            int descWidth = metrics.stringWidth(description);
-            g2d.setColor(Color.GRAY);
-            g2d.drawString(description, (width - descWidth) / 2, 160);
-
-            String awardText = "Giải thưởng: " + (awardName != null ? awardName : "");
-            int awardWidth = metrics.stringWidth(awardText);
-            if (awardPosition.x == 0 && awardPosition.y == 0) {
-                awardPosition.setLocation((width - awardWidth) / 2, 200);
-            }
-
-            String rightSignature = "EFGH";
-            String rightRole = "CHỦ NHIỆM CLB";
-            int rightWidth = metrics.stringWidth(rightSignature);
-
-            g2d.setColor(Color.BLACK);
-            g2d.drawString(rightSignature, width - 50 - rightWidth, height - 30);
-            g2d.setColor(Color.GRAY);
-            g2d.drawString(rightRole, width - 50 - metrics.stringWidth(rightRole), height - 50);
-
-            g2d.setColor(Color.RED);
-            int sealSize = 40;
-            g2d.fillOval((width - sealSize) / 2, height - 70, sealSize, sealSize);
-            g2d.setColor(Color.WHITE);
-            g2d.fillRect((width - sealSize / 2) / 2, height - 60, sealSize / 2, 10);
-            g2d.fillRect((width - sealSize / 2) / 2, height - 50, sealSize / 2, 10);
-
-            int textHeight = metrics.getHeight();
-            recipientBounds = new Rectangle(recipientPosition.x, recipientPosition.y - metrics.getAscent(), recipientWidth, textHeight);
-            awardBounds = new Rectangle(awardPosition.x, awardPosition.y - metrics.getAscent(), awardWidth, textHeight);
-
-            g2d.setColor(Color.BLACK);
-            g2d.drawString(awardText, awardPosition.x, awardPosition.y);
-
-            // Vẽ các phần tử tùy chỉnh
-            for (CustomElement element : customElements) {
-                if ("text".equals(element.getType())) {
+        for (TextComponent component : getTextComponents()) {
+            String type = component.getType();
+            g2d.setFont(new Font(component.getFontName(),
+                    (component.isBold() ? Font.BOLD : 0) | (component.isItalic() ? Font.ITALIC : 0),
+                    component.getFontSize()));
+            switch (type) {
+                case "title":
+                    g2d.setColor(Color.RED);
+                    break;
+                case "transition":
+                case "description":
+                case "rightRole":
+                    g2d.setColor(Color.GRAY);
+                    break;
+                case "recipient":
+                    g2d.setColor(Color.RED);
+                    break;
+                case "award":
+                case "owner":
                     g2d.setColor(Color.BLACK);
-                    g2d.drawString(element.getText(), element.getPosition().x, element.getPosition().y);
-                }
+                    break;
             }
-
-        } catch (Exception e) {
-            System.out.println("Lỗi khi tạo hình ảnh: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            g2d.dispose();
+            g2d.drawString(component.getText(), component.getX(), component.getY());
         }
+
+        // Vẽ logo nếu có
+        if (logoPath != null) {
+            try {
+                BufferedImage logoImage = ImageIO.read(new File(logoPath));
+                g2d.drawImage(logoImage, logoX, logoY, (int) logoWidth, (int) logoHeight, null);
+            } catch (IOException e) {
+                System.err.println("Không thể vẽ logo: " + e.getMessage());
+            }
+        }
+
+        g2d.dispose();
         return image;
     }
 }

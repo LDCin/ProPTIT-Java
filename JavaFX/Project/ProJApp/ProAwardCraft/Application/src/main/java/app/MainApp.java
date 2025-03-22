@@ -13,7 +13,7 @@ public class MainApp extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainView.fxml"));
         Parent root = loader.load();
         primaryStage.setTitle("ProAwardCraft");
-        primaryStage.setScene(new Scene(root, 1000, 600));
+        primaryStage.setScene(new Scene(root, 1000, 1000));
         primaryStage.show();
     }
 
