@@ -11,46 +11,63 @@
   <properties>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
-    <javafx.version>17.0.2</javafx.version>
-    <!--suppress UnresolvedMavenProperty -->
-    <javafx.platform>${os.detected.classifier}</javafx.platform>
+    <javafx.version>21</javafx.version>
+    <gson.version>2.10.1</gson.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
-  <profiles>
-    <profile>
-      <id>automatic-module-detection</id>
-      <activation>
-        <property>
-          <name>os.detected.classifier</name>
-        </property>
-      </activation>
-      <properties>
-        <os.detected.classifier>${os.name}-${os.arch}</os.detected.classifier>
-      </properties>
-    </profile>
-  </profiles>
+  <!-- Thêm repositories -->
+  <repositories>
+    <repository>
+      <id>central</id>
+      <url>https://repo.maven.apache.org/maven2</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <!-- Thêm pluginRepositories -->
+  <pluginRepositories>
+    <pluginRepository>
+      <id>central</id>
+      <url>https://repo.maven.apache.org/maven2</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 
   <dependencies>
     <!-- JavaFX Controls -->
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-controls</artifactId>
-      <version>${javafx.version}</version>
-      <classifier>${javafx.platform}</classifier>
+      <version>17.0.2</version>
     </dependency>
     <!-- JavaFX FXML -->
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-fxml</artifactId>
-      <version>${javafx.version}</version>
-      <classifier>${javafx.platform}</classifier>
+      <version>17.0.2</version>
     </dependency>
     <!-- JavaFX Swing -->
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-swing</artifactId>
-      <version>${javafx.version}</version>
-      <classifier>${javafx.platform}</classifier>
+      <version>17.0.2</version>
+    </dependency>
+    <!-- Gson for JSON serialization/deserialization -->
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>${gson.version}</version>
     </dependency>
   </dependencies>
 
@@ -70,21 +87,7 @@
         <version>0.0.8</version>
         <configuration>
           <mainClass>app.ProAwardCraftApplication</mainClass>
-          <options>
-            <option>--module-path</option>
-            <option>${project.build.directory}/libs</option>
-            <option>--add-modules</option>
-            <option>javafx.controls,javafx.fxml,javafx.swing</option>
-          </options>
         </configuration>
-        <executions>
-          <execution>
-            <id>default-cli</id>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -99,6 +102,29 @@
             </goals>
             <configuration>
               <outputDirectory>${project.build.directory}/libs</outputDirectory>
+              <includeScope>runtime</includeScope>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Plugin để tạo file JAR chạy được -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.5.1</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>app.ProAwardCraftApplication</mainClass>
+                </transformer>
+              </transformers>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
             </configuration>
           </execution>
         </executions>

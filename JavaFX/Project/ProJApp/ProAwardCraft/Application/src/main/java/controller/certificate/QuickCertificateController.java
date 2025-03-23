@@ -12,6 +12,9 @@ import model.certificate.QuickCertificate;
 import model.template.Template;
 import model.template.TemplateFactory;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.List;
 
 public class QuickCertificateController {
@@ -72,8 +75,11 @@ public class QuickCertificateController {
 
     private void updatePreviewImage(Template template) {
         try {
-            Image previewImage = new Image(getClass().getClassLoader().getResource(template.getPreviewImagePath()).toExternalForm());
-            previewImageView.setImage(previewImage);
+            BufferedImage previewImage = ImageIO.read(new File(template.getPreviewImagePath()));
+            if (previewImage != null) {
+                javafx.scene.image.Image fxImage = javafx.embed.swing.SwingFXUtils.toFXImage(previewImage, null);
+                previewImageView.setImage(fxImage);
+            }
         } catch (Exception e) {
             System.err.println("Không thể tải hình ảnh Preview: " + e.getMessage());
             previewImageView.setImage(null);

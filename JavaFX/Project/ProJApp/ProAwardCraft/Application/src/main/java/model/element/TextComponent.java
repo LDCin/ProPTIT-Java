@@ -7,9 +7,9 @@ public class TextComponent implements Serializable {
 
     private String type; // Loại thành phần (title, recipient, award, v.v.)
     private String text; // Nội dung văn bản
-    private String fontName = "Arial"; // Tên font
-    private int fontSize = 12; // Kích thước font
-    private boolean isBold = false; // In đậm
+    private String fontName = "Times New Roman"; // Tên font
+    private int fontSize = 15; // Kích thước font
+    private boolean isBold = true; // In đậm
     private boolean isItalic = false; // In nghiêng
     private String alignment = "Giữa"; // Căn chỉnh
     private int x, y; // Vị trí

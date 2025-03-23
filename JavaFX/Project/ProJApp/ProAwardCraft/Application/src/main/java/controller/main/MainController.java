@@ -14,11 +14,14 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
@@ -30,6 +33,7 @@ import javafx.stage.Stage;
 import model.certificate.Certificate;
 import model.certificate.CustomCertificate;
 import model.certificate.QuickCertificate;
+import model.element.Element;
 import model.element.TextComponent;
 import model.product.CertificateManager;
 import model.product.Product;
@@ -57,6 +61,10 @@ public class MainController {
     private Rectangle frameRect, backgroundRect;
     private double offsetX, offsetY;
 
+    // Biến để theo dõi ImageView được chọn và các neo của nó
+    private ImageView selectedElement = null;
+    private Circle[] anchors = new Circle[4]; // 4 neo ở 4 góc
+
     @FXML
     public void initialize() {
         if (root == null || imageView == null || workspace == null) {
@@ -66,6 +74,48 @@ public class MainController {
 
         workspace.widthProperty().addListener((obs, oldVal, newVal) -> updateOffsets());
         workspace.heightProperty().addListener((obs, oldVal, newVal) -> updateOffsets());
+
+        // Thêm sự kiện kéo thả
+        workspace.setOnDragOver(event -> {
+            if (event.getGestureSource() != workspace && event.getDragboard().hasFiles()) {
+                event.acceptTransferModes(TransferMode.COPY);
+            }
+            event.consume();
+        });
+
+        workspace.setOnDragDropped(event -> {
+            Dragboard db = event.getDragboard();
+            boolean success = false;
+            if (db.hasFiles()) {
+                for (File file : db.getFiles()) {
+                    if (file.getName().endsWith(".png") || file.getName().endsWith(".jpg") || file.getName().endsWith(".jpeg")) {
+                        Image image = new Image(file.toURI().toString());
+                        ImageView imageView = new ImageView(image);
+                        imageView.setFitWidth(100); // Kích thước mặc định
+                        imageView.setFitHeight(100);
+                        imageView.setX(event.getX());
+                        imageView.setY(event.getY());
+                        workspace.getChildren().add(imageView);
+                        makeElementMovable(imageView); // Làm cho element có thể di chuyển
+                        success = true;
+
+                        // Lưu element vào chứng chỉ
+                        if (currentCertificate != null) {
+                            addElementToCertificate(file.getAbsolutePath(), "image", event.getX() - offsetX, event.getY() - offsetY, 100, 100);
+                        }
+                    }
+                }
+            }
+            event.setDropCompleted(success);
+            event.consume();
+        });
+
+        // Thêm sự kiện nhấp chuột vào workspace để bỏ chọn element
+        workspace.setOnMouseClicked(event -> {
+            if (event.getTarget() == workspace) { // Chỉ bỏ chọn nếu nhấp vào vùng trống
+                deselectElement();
+            }
+        });
     }
 
     private void updateOffsets() {
@@ -179,6 +229,7 @@ public class MainController {
                     newProduct.setFilename(filename);
                     manager.saveProduct(newProduct);
                     showAlert("Thành công", "Đã lưu sản phẩm: " + filename);
+                    currentCertificate.setCheckSaveLogo(true);
                 } catch (IOException e) {
                     showAlert("Lỗi", "Không thể lưu hình ảnh: " + e.getMessage());
                 }
@@ -217,15 +268,6 @@ public class MainController {
     }
 
     @FXML
-    private void handleEditText() {
-        if (selectedTextField != null) {
-            selectedTextField.setEditable(true);
-            selectedTextField.setStyle("-fx-background-color: white; -fx-border-color: black;");
-            selectedTextField.requestFocus();
-        }
-    }
-
-    @FXML
     private void handleFrameColorChange() {
         if (currentCertificate == null) {
             showAlert("Lỗi", "Chứng chỉ chưa được tạo! Vui lòng tạo chứng chỉ trước.");
@@ -236,8 +278,7 @@ public class MainController {
             return;
         }
 
-        // Tạo hộp thoại chọn màu
-        Dialog<ButtonType> dialog = new Dialog<>(); // Sửa kiểu của Dialog thành ButtonType
+        Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Chọn màu khung");
         dialog.setHeaderText("Chọn màu cho khung của chứng chỉ");
 
@@ -248,10 +289,10 @@ public class MainController {
         colorPicker.setValue((Color) frameRect.getStroke());
         dialog.getDialogPane().setContent(colorPicker);
 
-        Optional<ButtonType> result = dialog.showAndWait(); // Kết quả là Optional<ButtonType>
-        if (result.isPresent() && result.get() == applyButtonType) { // Kiểm tra xem người dùng có nhấn "Áp dụng" không
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == applyButtonType) {
             try {
-                Color color = colorPicker.getValue(); // Lấy màu từ ColorPicker
+                Color color = colorPicker.getValue();
                 frameRect.setStroke(color);
                 String frameColorHex = String.format("#%02X%02X%02X",
                         (int) (color.getRed() * 255),
@@ -262,7 +303,7 @@ public class MainController {
                 } else if (currentCertificate instanceof QuickCertificate) {
                     ((QuickCertificate) currentCertificate).setFrameColor(frameColorHex);
                 }
-                renderCertificate(); // Gọi lại để vẽ lại chứng chỉ với màu mới
+                renderCertificate();
             } catch (Exception e) {
                 showAlert("Lỗi", "Đã xảy ra lỗi khi thay đổi màu khung: " + e.getMessage());
                 e.printStackTrace();
@@ -281,7 +322,6 @@ public class MainController {
             return;
         }
 
-        // Tạo hộp thoại chọn màu
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Chọn màu nền");
         dialog.setHeaderText("Chọn màu nền cho chứng chỉ");
@@ -302,13 +342,12 @@ public class MainController {
                         (int) (color.getRed() * 255),
                         (int) (color.getGreen() * 255),
                         (int) (color.getBlue() * 255));
-                // Cập nhật backgroundColor trong currentCertificate
                 if (currentCertificate instanceof CustomCertificate) {
                     ((CustomCertificate) currentCertificate).setBackgroundColor(backgroundColorHex);
                 } else if (currentCertificate instanceof QuickCertificate) {
                     ((QuickCertificate) currentCertificate).setBackgroundColor(backgroundColorHex);
                 }
-                renderCertificate(); // Gọi lại để vẽ lại chứng chỉ với màu mới
+                renderCertificate();
             } catch (Exception e) {
                 showAlert("Lỗi", "Đã xảy ra lỗi khi thay đổi màu nền: " + e.getMessage());
                 e.printStackTrace();
@@ -384,7 +423,6 @@ public class MainController {
             return;
         }
 
-        // Tạo hộp thoại nhập kích thước
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Cập nhật kích thước logo");
         dialog.setHeaderText("Nhập kích thước mới cho logo");
@@ -396,7 +434,6 @@ public class MainController {
         grid.setHgap(10);
         grid.setVgap(10);
 
-        // Tính tỷ lệ ban đầu của logo
         double originalWidth = currentCertificate.getLogoWidth();
         double originalHeight = currentCertificate.getLogoHeight();
         double aspectRatio = originalWidth / originalHeight;
@@ -404,7 +441,7 @@ public class MainController {
         TextField widthField = new TextField(String.valueOf(originalWidth));
         TextField heightField = new TextField(String.valueOf(originalHeight));
         CheckBox lockAspectRatioCheckBox = new CheckBox("Giữ tỷ lệ");
-        lockAspectRatioCheckBox.setSelected(true); // Mặc định tích vào
+        lockAspectRatioCheckBox.setSelected(true);
 
         grid.add(new Label("Chiều rộng:"), 0, 0);
         grid.add(widthField, 1, 0);
@@ -412,7 +449,6 @@ public class MainController {
         grid.add(heightField, 1, 1);
         grid.add(lockAspectRatioCheckBox, 1, 2);
 
-        // Thêm listener để tự động cập nhật chiều cao hoặc chiều rộng khi thay đổi
         widthField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (lockAspectRatioCheckBox.isSelected()) {
                 try {
@@ -450,7 +486,6 @@ public class MainController {
                     return;
                 }
 
-                // Đảm bảo kích thước không vượt quá vùng chứng chỉ
                 double maxWidth = 480;
                 double maxHeight = 280;
                 if (newWidth > maxWidth || newHeight > maxHeight) {
@@ -476,10 +511,240 @@ public class MainController {
             double[] offset = (double[]) logoView.getUserData();
             logoView.setX(event.getSceneX() - offset[0]);
             logoView.setY(event.getSceneY() - offset[1]);
-            // Cập nhật vị trí logo trong certificate
             currentCertificate.setLogoX((int) (logoView.getX() - offsetX));
             currentCertificate.setLogoY((int) (logoView.getY() - offsetY));
         });
+    }
+
+    @FXML
+    private void handleAddElement() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Chọn hình ảnh để thêm vào chứng chỉ");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Hình ảnh", "*.png", "*.jpg", "*.jpeg")
+        );
+        File selectedFile = fileChooser.showOpenDialog(workspace.getScene().getWindow());
+
+        if (selectedFile != null) {
+            Image image = new Image(selectedFile.toURI().toString());
+            ImageView imageView = new ImageView(image);
+            imageView.setFitWidth(100); // Kích thước mặc định
+            imageView.setFitHeight(100);
+            imageView.setX(50); // Vị trí mặc định
+            imageView.setY(50);
+            workspace.getChildren().add(imageView);
+            makeElementMovable(imageView); // Làm cho element có thể di chuyển
+
+            // Lưu element vào chứng chỉ nếu có
+            if (currentCertificate != null) {
+                addElementToCertificate(selectedFile.getAbsolutePath(), "image", 50 - offsetX, 50 - offsetY, 100, 100);
+            }
+        }
+    }
+
+    private void addElementToCertificate(String path, String type, double x, double y, double width, double height) {
+        if (currentCertificate != null) {
+            currentCertificate.addElement(path, type, x, y, width, height);
+        }
+    }
+
+    private void updateElementPositionInCertificate(ImageView element) {
+        if (currentCertificate != null) {
+            for (Element certElement : currentCertificate.getElements()) {
+                if (certElement.getPath().equals(element.getImage().getUrl())) {
+                    certElement.setX(element.getX() - offsetX);
+                    certElement.setY(element.getY() - offsetY);
+                    break;
+                }
+            }
+        }
+    }
+
+    private void updateElementSizeInCertificate(ImageView element) {
+        if (currentCertificate != null) {
+            for (Element certElement : currentCertificate.getElements()) {
+                if (certElement.getPath().equals(element.getImage().getUrl())) {
+                    certElement.setWidth(element.getFitWidth());
+                    certElement.setHeight(element.getFitHeight());
+                    break;
+                }
+            }
+        }
+    }
+
+    private void removeElementFromCertificate(ImageView element) {
+        if (currentCertificate != null) {
+            currentCertificate.getElements().removeIf(certElement -> certElement.getPath().equals(element.getImage().getUrl()));
+        }
+    }
+
+    private void makeElementMovable(ImageView element) {
+        element.setCursor(Cursor.MOVE);
+        element.setOnMousePressed(event -> {
+            element.setUserData(new double[]{event.getSceneX() - element.getX(), event.getSceneY() - element.getY()});
+        });
+        element.setOnMouseDragged(event -> {
+            double[] offset = (double[]) element.getUserData();
+            element.setX(event.getSceneX() - offset[0]);
+            element.setY(event.getSceneY() - offset[1]);
+            if (currentCertificate != null) {
+                updateElementPositionInCertificate(element);
+            }
+            // Cập nhật vị trí các neo nếu element đang được chọn
+            if (selectedElement == element) {
+                updateAnchorsPosition(element);
+            }
+        });
+        element.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 1) { // Nhấp một lần để chọn
+                selectElement(element);
+            } else if (event.getClickCount() == 2) { // Nhấp đúp để xóa
+                workspace.getChildren().remove(element);
+                if (currentCertificate != null) {
+                    removeElementFromCertificate(element);
+                }
+                deselectElement();
+            }
+        });
+    }
+
+    private void selectElement(ImageView element) {
+        if (selectedElement != element) {
+            deselectElement(); // Bỏ chọn element trước đó
+            selectedElement = element;
+            showAnchors(element); // Hiển thị các neo
+        }
+    }
+
+    private void deselectElement() {
+        if (selectedElement != null) {
+            hideAnchors(); // Ẩn các neo
+            selectedElement = null;
+        }
+    }
+
+    private void showAnchors(ImageView element) {
+        // Tạo 4 neo ở 4 góc
+        anchors[0] = createAnchor(element.getX(), element.getY(), "top-left"); // Góc trên-trái
+        anchors[1] = createAnchor(element.getX() + element.getFitWidth(), element.getY(), "top-right"); // Góc trên-phải
+        anchors[2] = createAnchor(element.getX(), element.getY() + element.getFitHeight(), "bottom-left"); // Góc dưới-trái
+        anchors[3] = createAnchor(element.getX() + element.getFitWidth(), element.getY() + element.getFitHeight(), "bottom-right"); // Góc dưới-phải
+
+        workspace.getChildren().addAll(anchors);
+    }
+
+    private void hideAnchors() {
+        if (anchors[0] != null) {
+            workspace.getChildren().removeAll(anchors);
+            for (int i = 0; i < anchors.length; i++) {
+                anchors[i] = null;
+            }
+        }
+    }
+
+    private void updateAnchorsPosition(ImageView element) {
+        if (anchors[0] != null) {
+            anchors[0].setCenterX(element.getX());
+            anchors[0].setCenterY(element.getY());
+            anchors[1].setCenterX(element.getX() + element.getFitWidth());
+            anchors[1].setCenterY(element.getY());
+            anchors[2].setCenterX(element.getX());
+            anchors[2].setCenterY(element.getY() + element.getFitHeight());
+            anchors[3].setCenterX(element.getX() + element.getFitWidth());
+            anchors[3].setCenterY(element.getY() + element.getFitHeight());
+        }
+    }
+
+    private Circle createAnchor(double x, double y, String position) {
+        Circle anchor = new Circle(x, y, 5, Color.RED);
+        anchor.setStroke(Color.BLACK);
+        anchor.setStrokeWidth(1);
+        anchor.setCursor(Cursor.CROSSHAIR);
+
+        anchor.setOnMousePressed(event -> {
+            anchor.setUserData(new double[]{event.getSceneX(), event.getSceneY()});
+        });
+
+        anchor.setOnMouseDragged(event -> {
+            if (selectedElement == null) return;
+
+            double[] startPos = (double[]) anchor.getUserData();
+            double deltaX = event.getSceneX() - startPos[0];
+            double deltaY = event.getSceneY() - startPos[1];
+
+            double newX = selectedElement.getX();
+            double newY = selectedElement.getY();
+            double newWidth = selectedElement.getFitWidth();
+            double newHeight = selectedElement.getFitHeight();
+
+            switch (position) {
+                case "top-left":
+                    newX += deltaX;
+                    newY += deltaY;
+                    newWidth -= deltaX;
+                    newHeight -= deltaY;
+                    break;
+                case "top-right":
+                    newY += deltaY;
+                    newWidth += deltaX;
+                    newHeight -= deltaY;
+                    break;
+                case "bottom-left":
+                    newX += deltaX;
+                    newWidth -= deltaX;
+                    newHeight += deltaY;
+                    break;
+                case "bottom-right":
+                    newWidth += deltaX;
+                    newHeight += deltaY;
+                    break;
+            }
+
+            // Đảm bảo kích thước không âm và không vượt quá giới hạn
+            if (newWidth < 10) {
+                newWidth = 10;
+                if (position.contains("left")) {
+                    newX = selectedElement.getX() + selectedElement.getFitWidth() - 10;
+                }
+            }
+            if (newHeight < 10) {
+                newHeight = 10;
+                if (position.contains("top")) {
+                    newY = selectedElement.getY() + selectedElement.getFitHeight() - 10;
+                }
+            }
+
+            // Đảm bảo element không vượt ra ngoài vùng chứng chỉ
+            double maxWidth = 480;
+            double maxHeight = 280;
+            if (newWidth > maxWidth) newWidth = maxWidth;
+            if (newHeight > maxHeight) newHeight = maxHeight;
+            if (newX < 10 + offsetX) newX = 10 + offsetX;
+            if (newY < 10 + offsetY) newY = 10 + offsetY;
+            if (newX + newWidth > 490 + offsetX) {
+                newX = 490 + offsetX - newWidth;
+            }
+            if (newY + newHeight > 290 + offsetY) {
+                newY = 290 + offsetY - newHeight;
+            }
+
+            selectedElement.setX(newX);
+            selectedElement.setY(newY);
+            selectedElement.setFitWidth(newWidth);
+            selectedElement.setFitHeight(newHeight);
+
+            // Cập nhật vị trí và kích thước trong certificate
+            updateElementPositionInCertificate(selectedElement);
+            updateElementSizeInCertificate(selectedElement);
+
+            // Cập nhật vị trí các neo
+            updateAnchorsPosition(selectedElement);
+
+            // Cập nhật lại điểm bắt đầu cho lần kéo tiếp theo
+            anchor.setUserData(new double[]{event.getSceneX(), event.getSceneY()});
+        });
+
+        return anchor;
     }
 
     public void setCertificate(Certificate certificate) {
@@ -508,14 +773,13 @@ public class MainController {
     private void renderCertificate() {
         workspace.getChildren().clear();
         textComponentsMap.clear();
+        deselectElement(); // Bỏ chọn element khi render lại
 
         if (currentCertificate == null) {
-            // Không hiển thị thông báo lỗi, chỉ xóa giao diện và thoát
             return;
         }
 
         backgroundRect = new Rectangle(10 + offsetX, 10 + offsetY, 480, 280);
-        // Lấy backgroundColor từ currentCertificate
         String backgroundColorHex = currentCertificate instanceof CustomCertificate ?
                 ((CustomCertificate) currentCertificate).getBackgroundColor() :
                 ((QuickCertificate) currentCertificate).getBackgroundColor();
@@ -577,7 +841,6 @@ public class MainController {
         workspace.getChildren().add(frameRect);
         workspace.getChildren().addAll(textComponentsMap.values());
 
-        // Hiển thị logo nếu có
         if (currentCertificate.getLogoPath() != null) {
             try {
                 System.out.println("Đang thử hiển thị logo từ: " + currentCertificate.getLogoPath());
@@ -597,25 +860,59 @@ public class MainController {
                     return;
                 }
                 ImageView logoView = new ImageView(logoImage);
-                logoView.setFitWidth(currentCertificate.getLogoWidth());
-                logoView.setFitHeight(currentCertificate.getLogoHeight());
-                int logoX = currentCertificate.getLogoX();
-                int logoY = currentCertificate.getLogoY();
-                if (logoX < 0 || logoX + currentCertificate.getLogoWidth() > 500 || logoY < 0 || logoY + currentCertificate.getLogoHeight() > 300) {
-                    System.out.println("Logo nằm ngoài vùng hiển thị, đặt lại vị trí mặc định.");
-                    logoX = 230;
-                    logoY = 210;
-                    currentCertificate.setLogoX(logoX);
-                    currentCertificate.setLogoY(logoY);
+                double scaledWidth = currentCertificate.getLogoWidth();
+                double scaledHeight = currentCertificate.getLogoHeight();
+                if (currentCertificate.isCheckSaveLogo() == false && scaledWidth >= 50 && scaledHeight > 50) {
+                    scaledWidth = currentCertificate.getLogoWidth() / 2.5;
+                    scaledHeight = currentCertificate.getLogoHeight() / 2.5;
                 }
+                logoView.setFitWidth(scaledWidth);
+                logoView.setFitHeight(scaledHeight);
+
+                currentCertificate.setLogoWidth(scaledWidth);
+                currentCertificate.setLogoHeight(scaledHeight);
+
+                double logoX = (workspace.getWidth() - scaledWidth) / 2 - offsetX;
+                double logoY;
+                Text awardText = textComponentsMap.get("award");
+                if (awardText != null) {
+                    double awardY = awardText.getY() - offsetY;
+                    logoY = awardY + 20;
+                } else {
+                    logoY = 210;
+                }
+
+                if (logoX < 0 || logoX + scaledWidth > 500 || logoY < 0 || logoY + scaledHeight > 300) {
+                    System.out.println("Logo nằm ngoài vùng hiển thị, đặt lại vị trí mặc định.");
+                    logoX = 215;
+                    logoY = 210;
+                }
+
+                currentCertificate.setLogoX((int) logoX);
+                currentCertificate.setLogoY((int) logoY);
+
                 logoView.setX(logoX + offsetX);
                 logoView.setY(logoY + offsetY);
+
                 System.out.println("Hiển thị logo tại: (" + logoView.getX() + ", " + logoView.getY() + ")");
                 makeLogoMovable(logoView);
                 workspace.getChildren().add(logoView);
             } catch (Exception e) {
                 System.err.println("Không thể hiển thị logo: " + e.getMessage());
                 e.printStackTrace();
+            }
+        }
+
+        for (Element element : currentCertificate.getElements()) {
+            if ("image".equals(element.getType())) {
+                Image image = new Image(element.getPath());
+                ImageView imageView = new ImageView(image);
+                imageView.setFitWidth(element.getWidth());
+                imageView.setFitHeight(element.getHeight());
+                imageView.setX(element.getX() + offsetX);
+                imageView.setY(element.getY() + offsetY);
+                makeElementMovable(imageView);
+                workspace.getChildren().add(imageView);
             }
         }
     }
@@ -646,33 +943,27 @@ public class MainController {
             return;
         }
 
-        // Tạo hộp thoại tùy chỉnh
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Chỉnh sửa văn bản và font");
         dialog.setHeaderText("Chỉnh sửa nội dung và thuộc tính font cho: " + type);
 
-        // Tạo các nút
         ButtonType applyButtonType = new ButtonType("Áp dụng", ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(applyButtonType, ButtonType.CANCEL);
 
-        // Tạo giao diện hộp thoại
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
 
-        // Nội dung văn bản
         TextField textField = new TextField(text.getText());
         grid.add(new Label("Nội dung:"), 0, 0);
         grid.add(textField, 1, 0);
 
-        // Tìm kiếm font
         Label fontSearchLabel = new Label("Tìm kiếm font:");
         TextField fontSearchField = new TextField();
         fontSearchField.setPromptText("Nhập tên font để tìm kiếm...");
         grid.add(fontSearchLabel, 0, 1);
         grid.add(fontSearchField, 1, 1);
 
-        // Tên font
         Label fontNameLabel = new Label("Tên font:");
         ComboBox<String> fontNameComboBox = new ComboBox<>();
         String[] fontNames = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
@@ -681,7 +972,6 @@ public class MainController {
         grid.add(fontNameLabel, 0, 2);
         grid.add(fontNameComboBox, 1, 2);
 
-        // Lọc font dựa trên từ khóa tìm kiếm
         fontSearchField.textProperty().addListener((obs, oldValue, newValue) -> {
             fontNameComboBox.getItems().clear();
             String searchText = newValue.trim().toLowerCase();
@@ -694,21 +984,18 @@ public class MainController {
                     }
                 }
             }
-            // Nếu danh sách rỗng, hiển thị thông báo
             if (fontNameComboBox.getItems().isEmpty()) {
                 fontNameComboBox.setPromptText("Không tìm thấy font nào!");
             } else {
                 fontNameComboBox.setPromptText("Chọn font...");
-                // Nếu font hiện tại vẫn nằm trong danh sách lọc, giữ nguyên giá trị
                 if (fontNameComboBox.getItems().contains(component.getFontName())) {
                     fontNameComboBox.setValue(component.getFontName());
                 } else {
-                    fontNameComboBox.setValue(null); // Reset nếu font hiện tại không còn trong danh sách
+                    fontNameComboBox.setValue(null);
                 }
             }
         });
 
-        // Kích thước font
         Slider fontSizeSlider = new Slider(8, 72, component.getFontSize());
         fontSizeSlider.setShowTickLabels(true);
         fontSizeSlider.setShowTickMarks(true);
@@ -722,7 +1009,6 @@ public class MainController {
         grid.add(fontSizeSlider, 1, 3);
         grid.add(fontSizeLabel, 2, 3);
 
-        // In đậm và in nghiêng
         CheckBox boldCheckBox = new CheckBox("In đậm");
         boldCheckBox.setSelected(component.isBold());
         CheckBox italicCheckBox = new CheckBox("In nghiêng");
@@ -731,7 +1017,6 @@ public class MainController {
         grid.add(new Label("Kiểu chữ:"), 0, 4);
         grid.add(styleBox, 1, 4);
 
-        // Căn chỉnh
         ComboBox<String> alignmentComboBox = new ComboBox<>();
         alignmentComboBox.getItems().addAll("Trái", "Giữa", "Phải");
         alignmentComboBox.setValue(component.getAlignment());
@@ -740,69 +1025,38 @@ public class MainController {
 
         dialog.getDialogPane().setContent(grid);
 
-        // Xử lý khi nhấn "Áp dụng"
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == applyButtonType) {
-            String newText = textField.getText();
-            String fontName = fontNameComboBox.getValue();
-            int fontSize = (int) fontSizeSlider.getValue();
-            boolean isBold = boldCheckBox.isSelected();
-            boolean isItalic = italicCheckBox.isSelected();
-            String alignment = alignmentComboBox.getValue();
+            String newText = textField.getText().trim();
+            String newFont = fontNameComboBox.getValue();
+            int newSize = (int) fontSizeSlider.getValue();
+            boolean newBold = boldCheckBox.isSelected();
+            boolean newItalic = italicCheckBox.isSelected();
+            String newAlignment = alignmentComboBox.getValue();
 
-            // Kiểm tra font hợp lệ
-            if (fontName == null || fontName.trim().isEmpty()) {
-                showAlert("Lỗi", "Vui lòng chọn một font!");
+            if (newText.isEmpty()) {
+                showAlert("Lỗi", "Nội dung không được để trống!");
+                return;
+            }
+            if (newFont == null || newFont.isEmpty()) {
+                showAlert("Lỗi", "Vui lòng chọn font!");
                 return;
             }
 
-            // Cập nhật TextComponent
-            component.setFont(fontName, fontSize, isBold, isItalic, alignment);
-            updateCertificateData(type, newText);
-
-            // Cập nhật giao diện
-            text.setText(newText);
-            FontWeight weight = isBold ? FontWeight.BOLD : FontWeight.NORMAL;
-            FontPosture posture = isItalic ? FontPosture.ITALIC : FontPosture.REGULAR;
-            try {
-                text.setFont(Font.font(fontName, weight, posture, fontSize));
-            } catch (Exception e) {
-                text.setFont(Font.font("Arial", weight, posture, fontSize));
-            }
-
-            // Căn chỉnh lại dựa trên alignment
-            int x = component.getX();
-            if (alignment.equals("Giữa")) {
-                x = (int) (250 + offsetX - text.getLayoutBounds().getWidth() / 2);
-            } else if (alignment.equals("Trái")) {
-                x = (int) (10 + offsetX);
-            } else if (alignment.equals("Phải")) {
-                x = (int) (490 + offsetX - text.getLayoutBounds().getWidth());
-            }
-            text.setX(x);
+            component.setText(newText);
+            component.setFont(newFont, newSize, newBold, newItalic, newAlignment);
+            renderCertificate();
         }
-    }
-
-    private void updateCertificateData(String type, String newText) {
-        if (currentCertificate instanceof CustomCertificate) {
-            CustomCertificate cert = (CustomCertificate) currentCertificate;
-            switch (type) {
-                case "recipient": cert.setRecipientName(newText); break;
-                case "award": cert.setAwardName(newText.replace("Giải thưởng: ", "")); break;
-                case "owner": cert.setOwnerName(newText); break;
-            }
-        } else if (currentCertificate instanceof QuickCertificate) {
-            QuickCertificate cert = (QuickCertificate) currentCertificate;
-            switch (type) {
-                case "recipient": cert.setRecipientName(newText); break;
-                case "award": cert.setAwardName(newText.replace("Giải thưởng: ", "")); break;
-            }
-        }
-        currentCertificate.setTextComponent(type, newText);
     }
 
     private void updateCertificatePosition(String type, int x, int y) {
-        currentCertificate.setTextPosition(type, x, y);
+        if (currentCertificate != null) {
+            TextComponent component = currentCertificate.getTextComponent(type);
+            if (component != null) {
+                component.setX(x);
+                component.setY(y);
+            }
+        }
     }
 
     private BufferedImage generateImageFromWorkspace() {
@@ -842,7 +1096,6 @@ public class MainController {
             }
         }
 
-        // Vẽ logo nếu có
         if (currentCertificate.getLogoPath() != null) {
             try {
                 File logoFile = new File(currentCertificate.getLogoPath());
@@ -850,8 +1103,11 @@ public class MainController {
                     System.err.println("File logo không tồn tại: " + currentCertificate.getLogoPath());
                 } else {
                     BufferedImage logoImage = ImageIO.read(logoFile);
-                    g2d.drawImage(logoImage, currentCertificate.getLogoX(), currentCertificate.getLogoY(),
-                            (int) currentCertificate.getLogoWidth(), (int) currentCertificate.getLogoHeight(), null);
+                    int logoX = currentCertificate.getLogoX();
+                    int logoY = currentCertificate.getLogoY();
+                    int scaledWidth = (int) currentCertificate.getLogoWidth();
+                    int scaledHeight = (int) currentCertificate.getLogoHeight();
+                    g2d.drawImage(logoImage, logoX, logoY, scaledWidth, scaledHeight, null);
                 }
             } catch (IOException e) {
                 System.err.println("Không thể vẽ logo: " + e.getMessage());

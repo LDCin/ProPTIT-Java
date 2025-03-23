@@ -1,7 +1,8 @@
 module ProAwardCraft {
     requires javafx.controls;
     requires javafx.fxml;
-    requires java.desktop;
+    requires javafx.swing;
+    requires com.google.gson;
 
     // Mở các package con của controller để JavaFX có thể truy cập
     opens controller.main to javafx.fxml;

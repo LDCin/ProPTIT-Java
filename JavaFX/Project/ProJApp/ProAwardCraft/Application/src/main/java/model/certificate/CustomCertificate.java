@@ -1,6 +1,7 @@
 package model.certificate;
 
 import model.element.TextComponent;
+import model.element.Element;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -13,14 +14,13 @@ public class CustomCertificate extends Certificate {
 
     private String ownerName;
     private String frameColor;
-    private String backgroundColor; // Thuộc tính backgroundColor đã có
+    private String backgroundColor;
 
-    // Sửa hàm khởi tạo để nhận 5 tham số, bao gồm backgroundColor
     public CustomCertificate(String recipientName, String awardName, String ownerName, String frameColor, String backgroundColor) {
         super(recipientName, awardName);
         this.ownerName = ownerName;
         this.frameColor = frameColor;
-        this.backgroundColor = backgroundColor; // Khởi tạo backgroundColor
+        this.backgroundColor = backgroundColor;
         getTextComponents().add(new TextComponent("owner", ownerName, "Phải", 450, 270));
     }
 
@@ -88,7 +88,6 @@ public class CustomCertificate extends Certificate {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = image.createGraphics();
 
-        // Sử dụng backgroundColor để vẽ nền
         g2d.setColor(backgroundColor != null ? Color.decode(backgroundColor) : Color.WHITE);
         g2d.fillRect(0, 0, width, height);
 
@@ -121,11 +120,30 @@ public class CustomCertificate extends Certificate {
             g2d.drawString(component.getText(), component.getX(), component.getY());
         }
 
-        // Vẽ logo nếu có
+        for (Element element : getElements()) {
+            if ("image".equals(element.getType())) {
+                try {
+                    BufferedImage elementImage = ImageIO.read(new File(element.getPath()));
+                    g2d.drawImage(elementImage, (int) element.getX(), (int) element.getY(),
+                            (int) element.getWidth(), (int) element.getHeight(), null);
+                } catch (IOException e) {
+                    System.err.println("Không thể vẽ element: " + e.getMessage());
+                }
+            }
+        }
+
         if (logoPath != null) {
             try {
-                BufferedImage logoImage = ImageIO.read(new File(logoPath));
-                g2d.drawImage(logoImage, logoX, logoY, (int) logoWidth, (int) logoHeight, null);
+                File logoFile = new File(logoPath);
+                if (!logoFile.exists()) {
+                    System.err.println("File logo không tồn tại: " + logoPath);
+                } else {
+                    BufferedImage logoImage = ImageIO.read(logoFile);
+                    // Giảm kích thước logo đi 4 lần
+                    int scaledWidth = (int) (logoWidth / 4);
+                    int scaledHeight = (int) (logoHeight / 4);
+                    g2d.drawImage(logoImage, logoX, logoY, scaledWidth, scaledHeight, null);
+                }
             } catch (IOException e) {
                 System.err.println("Không thể vẽ logo: " + e.getMessage());
             }

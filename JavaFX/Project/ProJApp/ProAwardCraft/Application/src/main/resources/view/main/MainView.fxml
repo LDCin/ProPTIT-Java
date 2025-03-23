@@ -80,6 +80,7 @@
             <Button accessibleRole="MENU_ITEM" onAction="#handleSaveCertificate" text="Lưu sản phẩm" />
             <Button onAction="#handleExport" text="Xuất File" />
             <!-- Xóa các thành phần liên quan đến logo và màu sắc -->
+            <Button fx:id="addElementButton" text="Thêm Element" onAction="#handleAddElement" />
         </VBox>
     </right>
 </BorderPane>

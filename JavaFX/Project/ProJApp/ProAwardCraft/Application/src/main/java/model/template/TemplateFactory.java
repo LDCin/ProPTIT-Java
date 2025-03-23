@@ -11,7 +11,7 @@ public class TemplateFactory {
         List<Template> templates = new ArrayList<>();
 
         // Template 1: Giấy khen (Màu vàng nhạt, khung đỏ)
-        Template giayKhen = new Template("Giấy khen", "#FF0000", "#FFF9E6", "images/templates/giay_khen_preview.png");
+        Template giayKhen = new Template("Giấy khen", "#FF0000", "#FFF9E6", "Application/src/main/templates/giay_khen_preview.png");
         giayKhen.addTextComponent("title", new TextComponent("title", "GIẤY KHEN", "Giữa", 250, 40));
         giayKhen.addTextComponent("transition", new TextComponent("transition", "Được trao cho", "Giữa", 250, 70));
         giayKhen.addTextComponent("recipient", new TextComponent("recipient", "", "Giữa", 250, 110));
@@ -22,7 +22,7 @@ public class TemplateFactory {
         templates.add(giayKhen);
 
         // Template 2: Giấy chứng nhận (Màu xanh nhạt, khung xanh dương)
-        Template giayChungNhan = new Template("Giấy chứng nhận", "#005BB5", "#E6F0FA", "images/templates/giay_chung_nhan_preview.png");
+        Template giayChungNhan = new Template("Giấy chứng nhận", "#005BB5", "#E6F0FA", "Application/src/main/templates/giay_chung_nhan_preview.png");
         giayChungNhan.addTextComponent("title", new TextComponent("title", "GIẤY CHỨNG NHẬN", "Giữa", 250, 50));
         giayChungNhan.addTextComponent("transition", new TextComponent("transition", "Được trao cho", "Giữa", 250, 80));
         giayChungNhan.addTextComponent("recipient", new TextComponent("recipient", "", "Giữa", 250, 120));
@@ -33,7 +33,7 @@ public class TemplateFactory {
         templates.add(giayChungNhan);
 
         // Template 3: Bằng khen (Màu trắng, khung vàng)
-        Template bangKhen = new Template("Bằng khen", "#FFD700", "#FFFFFF", "images/templates/bang_khen_preview.png");
+        Template bangKhen = new Template("Bằng khen", "#FFD700", "#FFFFFF", "Application/src/main/templates/bang_khen_preview.png");
         bangKhen.addTextComponent("title", new TextComponent("title", "BẰNG KHEN", "Giữa", 250, 30));
         bangKhen.addTextComponent("transition", new TextComponent("transition", "Trao tặng", "Giữa", 250, 60));
         bangKhen.addTextComponent("recipient", new TextComponent("recipient", "", "Giữa", 250, 100));
@@ -44,7 +44,7 @@ public class TemplateFactory {
         templates.add(bangKhen);
 
         // Template 4: Chứng nhận thành tích (Màu xanh lá, khung đen)
-        Template chungNhanThanhTich = new Template("Chứng nhận thành tích", "#000000", "#E6FFE6", "images/templates/chung_nhan_thanh_tich_preview.png");
+        Template chungNhanThanhTich = new Template("Chứng nhận thành tích", "#000000", "#E6FFE6", "Application/src/main/templates/chung_nhan_thanh_tich_preview.png");
         chungNhanThanhTich.addTextComponent("title", new TextComponent("title", "CHỨNG NHẬN THÀNH TÍCH", "Giữa", 250, 50));
         chungNhanThanhTich.addTextComponent("transition", new TextComponent("transition", "Công nhận", "Giữa", 250, 80));
         chungNhanThanhTich.addTextComponent("recipient", new TextComponent("recipient", "", "Giữa", 250, 120));
@@ -55,7 +55,7 @@ public class TemplateFactory {
         templates.add(chungNhanThanhTich);
 
         // Template 5: Giấy vinh danh (Màu tím nhạt, khung tím đậm)
-        Template giayVinhDanh = new Template("Giấy vinh danh", "#800080", "#F5E6FF", "images/templates/giay_vinh_danh_preview.png");
+        Template giayVinhDanh = new Template("Giấy vinh danh", "#800080", "#F5E6FF", "Application/src/main/templates/giay_vinh_danh_preview.png");
         giayVinhDanh.addTextComponent("title", new TextComponent("title", "GIẤY VINH DANH", "Giữa", 250, 40));
         giayVinhDanh.addTextComponent("transition", new TextComponent("transition", "Tôn vinh", "Giữa", 250, 70));
         giayVinhDanh.addTextComponent("recipient", new TextComponent("recipient", "", "Giữa", 250, 110));

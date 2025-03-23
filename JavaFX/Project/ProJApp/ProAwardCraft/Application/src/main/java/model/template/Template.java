@@ -44,16 +44,8 @@ public class Template implements Serializable {
         return backgroundColor;
     }
 
-    public void setBackgroundColor(String backgroundColor) {
-        this.backgroundColor = backgroundColor;
-    }
-
     public String getPreviewImagePath() {
         return previewImagePath;
-    }
-
-    public void setPreviewImagePath(String previewImagePath) {
-        this.previewImagePath = previewImagePath;
     }
 
     public Map<String, TextComponent> getTextComponents() {
