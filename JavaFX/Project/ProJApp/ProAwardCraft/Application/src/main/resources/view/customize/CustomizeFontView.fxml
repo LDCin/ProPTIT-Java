@@ -13,26 +13,21 @@
 <VBox alignment="CENTER" prefHeight="400.0" prefWidth="300.0" spacing="10.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.customize.CustomizeFontController">
     <Label text="Tùy chỉnh Font" styleClass="title-label" />
 
-    <!-- Chọn thành phần văn bản -->
     <Label text="Chọn thành phần:" />
     <ComboBox fx:id="textComponentComboBox" prefWidth="150.0" />
 
-    <!-- Tên font -->
     <Label text="Tên font:" />
     <TextField fx:id="fontNameField" text="Arial" />
 
-    <!-- Kích thước font -->
     <Label text="Kích thước font:" />
     <Slider fx:id="fontSizeSlider" min="8" max="72" value="12" showTickLabels="true" showTickMarks="true" majorTickUnit="8" minorTickCount="1" />
     <Label fx:id="fontSizeLabel" text="12" />
 
-    <!-- In đậm và in nghiêng -->
     <HBox spacing="10.0">
         <CheckBox fx:id="boldCheckBox" text="In đậm" />
         <CheckBox fx:id="italicCheckBox" text="In nghiêng" />
     </HBox>
 
-    <!-- Căn chỉnh -->
     <Label text="Căn chỉnh:" />
     <ComboBox fx:id="alignmentComboBox" prefWidth="150.0">
         <items>
@@ -45,6 +40,5 @@
         </value>
     </ComboBox>
 
-    <!-- Nút áp dụng -->
     <Button text="Áp dụng" onAction="#applyFontChanges" styleClass="apply-button" />
 </VBox>

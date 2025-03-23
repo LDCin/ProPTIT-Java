@@ -24,9 +24,9 @@ public class CustomCertificateController implements Initializable {
     @FXML private TextField awardNameField;
     @FXML private TextField ownerNameField;
     @FXML private ColorPicker frameColorPicker;
-    @FXML private ColorPicker backgroundColorPicker; // Thêm ColorPicker cho màu nền
-    @FXML private Label logoPathLabel; // Nhãn hiển thị tên file logo
-    private String logoPath; // Biến lưu đường dẫn logo
+    @FXML private ColorPicker backgroundColorPicker;
+    @FXML private Label logoPathLabel;
+    private String logoPath;
 
     private MainController mainController;
 
@@ -40,7 +40,7 @@ public class CustomCertificateController implements Initializable {
             frameColorPicker.setValue(Color.BLACK);
         }
         if (backgroundColorPicker != null) {
-            backgroundColorPicker.setValue(Color.WHITE); // Mặc định là màu trắng
+            backgroundColorPicker.setValue(Color.WHITE);
         }
     }
 
@@ -98,7 +98,6 @@ public class CustomCertificateController implements Initializable {
             cert.setTextComponent("owner", ownerName);
             if (logoPath != null) {
                 cert.setLogoPath(logoPath);
-                // Tính toán kích thước logo
                 BufferedImage logoImage = ImageIO.read(new File(logoPath));
                 double maxWidth = 480;
                 double maxHeight = 280;

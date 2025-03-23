@@ -20,7 +20,6 @@ import javax.imageio.ImageIO;
 public class ProductManageController {
 
     @FXML private ListView<Product> productList;
-    @FXML private TextField productNameField;
 
     private MainController mainController;
     private CertificateManager manager;
@@ -43,10 +42,9 @@ public class ProductManageController {
         });
 
         productList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            // Chỉ hiển thị chứng chỉ nếu sản phẩm chưa bị xóa và file vẫn tồn tại
             if (newVal != null && newVal.getFilename() != null) {
                 File file = new File(newVal.getFilename());
-                if (file.exists()) { // Kiểm tra xem file có tồn tại không trước khi mở
+                if (file.exists()) {
                     try {
                         BufferedImage image = ImageIO.read(file);
                         mainController.setCertificate(newVal.getCertificate());
@@ -66,7 +64,6 @@ public class ProductManageController {
             return;
         }
 
-        // Hiển thị hộp thoại xác nhận trước khi xóa
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
         confirmation.setTitle("Xác nhận xóa");
         confirmation.setHeaderText("Bạn có chắc muốn xóa sản phẩm này?");
@@ -74,7 +71,6 @@ public class ProductManageController {
 
         Optional<ButtonType> result = confirmation.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            // Xóa file hình ảnh trên ổ đĩa
             String filename = selectedProduct.getFilename();
             boolean fileDeleted = false;
             if (filename != null && !filename.isEmpty()) {
@@ -92,7 +88,6 @@ public class ProductManageController {
             if (manager.removeProduct(selectedProduct)) {
                 refreshProductList();
 
-                // Xóa lựa chọn trong ListView để tránh tự động chọn sản phẩm khác
                 productList.getSelectionModel().clearSelection();
 
                 if (mainController.getCurrentCertificate() != null &&
@@ -110,7 +105,6 @@ public class ProductManageController {
     public void refreshProductList() {
         productList.setItems(FXCollections.observableArrayList(manager.getProducts()));
         System.out.println("Refreshed product list. Current items: " + manager.getProducts().size());
-        // In danh sách sản phẩm để kiểm tra
         manager.getProducts().forEach(product -> System.out.println("Product in list: " + product.getName()));
     }
 

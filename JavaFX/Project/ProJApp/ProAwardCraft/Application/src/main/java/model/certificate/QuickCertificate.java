@@ -48,7 +48,6 @@ public class QuickCertificate extends Certificate {
                 double widthRatio = maxWidth / logoImage.getWidth();
                 double heightRatio = maxHeight / logoImage.getHeight();
                 double scale = Math.min(widthRatio, heightRatio);
-                // Giảm kích thước logo đi 4 lần ngay từ đầu
                 this.logoWidth = logoImage.getWidth() * scale;
                 this.logoHeight = logoImage.getHeight() * scale;
             } else {
@@ -159,7 +158,6 @@ public class QuickCertificate extends Certificate {
             try {
                 BufferedImage logoImage;
                 if (logoPath.startsWith("file:") || logoPath.startsWith("jar:")) {
-                    // Nếu logoPath là tài nguyên trong JAR
                     java.net.URL logoUrl = new java.net.URL(logoPath);
                     logoImage = ImageIO.read(logoUrl);
                 } else {
@@ -170,7 +168,6 @@ public class QuickCertificate extends Certificate {
                     }
                     logoImage = ImageIO.read(logoFile);
                 }
-                // Sử dụng kích thước và vị trí đã lưu
                 int scaledWidth = (int) logoWidth;
                 int scaledHeight = (int) logoHeight;
                 g2d.drawImage(logoImage, logoX, logoY, scaledWidth, scaledHeight, null);

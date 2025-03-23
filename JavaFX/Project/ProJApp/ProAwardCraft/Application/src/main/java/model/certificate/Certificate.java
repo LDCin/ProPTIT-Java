@@ -15,9 +15,8 @@ import javax.imageio.ImageIO;
 public abstract class Certificate implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    protected String name;
     protected List<TextComponent> textComponents = new ArrayList<>();
-    protected List<Element> elements = new ArrayList<>(); // Danh sách các element kéo thả
+    protected List<Element> elements = new ArrayList<>();
 
     protected String logoPath = "default_logo.png";
     protected int logoX = 215;
@@ -80,20 +79,6 @@ public abstract class Certificate implements Serializable {
 
     public void addElement(String path, String type, double x, double y, double width, double height) {
         elements.add(new Element(type, path, x, y, width, height));
-    }
-
-    public void updateElementPosition(ImageView elementView) {
-        for (Element element : elements) {
-            if (element.getPath().equals(elementView.getImage().getUrl())) {
-                element.setX(elementView.getX() - 250); // offsetX tạm thời hardcode, thay bằng biến từ MainController nếu cần
-                element.setY(elementView.getY() - 150); // offsetY tạm thời hardcode
-                break;
-            }
-        }
-    }
-
-    public void removeElement(ImageView elementView) {
-        elements.removeIf(element -> element.getPath().equals(elementView.getImage().getUrl()));
     }
 
     public abstract String getRecipientName();

@@ -36,34 +36,6 @@ public class CustomCertificate extends Certificate {
         return component != null ? component.getText().replace("Giải thưởng: ", "") : "";
     }
 
-    public String getOwnerName() {
-        TextComponent component = getTextComponent("owner");
-        return component != null ? component.getText() : "";
-    }
-
-    public void setRecipientName(String recipientName) {
-        setTextComponent("recipient", recipientName);
-    }
-
-    public void setAwardName(String awardName) {
-        setTextComponent("award", "Giải thưởng: " + awardName);
-    }
-
-    public void setOwnerName(String ownerName) {
-        setTextComponent("owner", ownerName);
-    }
-
-    public void setRecipientPosition(int x, int y) {
-        setTextPosition("recipient", x, y);
-    }
-
-    public void setAwardPosition(int x, int y) {
-        setTextPosition("award", x, y);
-    }
-
-    public void setOwnerPosition(int x, int y) {
-        setTextPosition("owner", x, y);
-    }
 
     public String getFrameColor() {
         return frameColor;
@@ -139,7 +111,6 @@ public class CustomCertificate extends Certificate {
                     System.err.println("File logo không tồn tại: " + logoPath);
                 } else {
                     BufferedImage logoImage = ImageIO.read(logoFile);
-                    // Giảm kích thước logo đi 4 lần
                     int scaledWidth = (int) (logoWidth / 4);
                     int scaledHeight = (int) (logoHeight / 4);
                     g2d.drawImage(logoImage, logoX, logoY, scaledWidth, scaledHeight, null);

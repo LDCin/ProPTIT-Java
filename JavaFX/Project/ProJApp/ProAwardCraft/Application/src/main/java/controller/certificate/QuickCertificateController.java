@@ -29,11 +29,9 @@ public class QuickCertificateController {
 
     @FXML
     public void initialize() {
-        // Khởi tạo danh sách Template
         templates = TemplateFactory.getTemplates();
         templateComboBox.getItems().addAll(templates);
 
-        // Thiết lập renderer cho ComboBox để hiển thị tên Template
         templateComboBox.setCellFactory(param -> new javafx.scene.control.ListCell<Template>() {
             @Override
             protected void updateItem(Template item, boolean empty) {
@@ -58,13 +56,11 @@ public class QuickCertificateController {
             }
         });
 
-        // Mặc định chọn Template đầu tiên
         if (!templates.isEmpty()) {
             templateComboBox.setValue(templates.get(0));
             updatePreviewImage(templates.get(0));
         }
 
-        // Cập nhật hình ảnh Preview khi người dùng chọn Template
         templateComboBox.setOnAction(event -> {
             Template selectedTemplate = templateComboBox.getValue();
             if (selectedTemplate != null) {
@@ -107,10 +103,7 @@ public class QuickCertificateController {
         }
 
         try {
-            // Tạo QuickCertificate với Template được chọn
             QuickCertificate cert = new QuickCertificate(recipientName, awardName, selectedTemplate);
-
-            // Đặt chứng chỉ vào MainController và đóng cửa sổ
             mainController.setCertificate(cert);
             closeStage();
         } catch (Exception ex) {

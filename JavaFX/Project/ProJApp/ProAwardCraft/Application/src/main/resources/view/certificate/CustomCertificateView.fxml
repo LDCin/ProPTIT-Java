@@ -24,12 +24,10 @@
         <Label text="Màu nền:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
         <ColorPicker fx:id="backgroundColorPicker" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
 
-        <!-- Chọn logo -->
         <Label text="Logo:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
         <Button text="Chọn Logo" onAction="#handleChooseLogo" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
         <Label fx:id="logoPathLabel" text="Chưa chọn logo" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
 
-        <!-- Nút "Tạo chứng chỉ" -->
         <Button text="Tạo chứng chỉ" onAction="#handleGenerate" GridPane.rowIndex="7" GridPane.columnIndex="1" GridPane.halignment="RIGHT"/>
     </GridPane>
 </VBox>

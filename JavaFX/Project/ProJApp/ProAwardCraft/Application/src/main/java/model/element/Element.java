@@ -5,10 +5,10 @@ import java.io.Serializable;
 public class Element implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private String type; // "image", "text", v.v.
-    private String path; // Đường dẫn tệp
-    private double x, y; // Vị trí
-    private double width, height; // Kích thước
+    private String type;
+    private String path;
+    private double x, y;
+    private double width, height;
 
     public Element(String type, String path, double x, double y, double width, double height) {
         this.type = type;
@@ -34,9 +34,5 @@ public class Element implements Serializable {
 
     public void setHeight(double fitHeight) {
         this.height = fitHeight;
-    }
-
-    public void setPath(String absolutePath) {
-        this.path = absolutePath;
     }
 }

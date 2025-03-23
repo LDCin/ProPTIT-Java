@@ -21,7 +21,6 @@ public class Product implements Serializable {
 
     public String getName() { return name; }
     public Certificate getCertificate() { return certificate; }
-    public Date getCreationDate() { return creationDate; }
     public String getFilename() { return filename; }
     public void setFilename(String filename) { this.filename = filename; }
 

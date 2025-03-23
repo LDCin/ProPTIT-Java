@@ -54,16 +54,13 @@ public class MainController {
     @FXML private AnchorPane workspace;
 
     private Certificate currentCertificate;
-    private String currentFont = "Arial";
     private CertificateManager manager = new CertificateManager();
-    private TextField selectedTextField;
     private Map<String, Text> textComponentsMap = new HashMap<>();
     private Rectangle frameRect, backgroundRect;
     private double offsetX, offsetY;
 
-    // Biến để theo dõi ImageView được chọn và các neo của nó
     private ImageView selectedElement = null;
-    private Circle[] anchors = new Circle[4]; // 4 neo ở 4 góc
+    private Circle[] anchors = new Circle[4];
 
     @FXML
     public void initialize() {
@@ -75,7 +72,6 @@ public class MainController {
         workspace.widthProperty().addListener((obs, oldVal, newVal) -> updateOffsets());
         workspace.heightProperty().addListener((obs, oldVal, newVal) -> updateOffsets());
 
-        // Thêm sự kiện kéo thả
         workspace.setOnDragOver(event -> {
             if (event.getGestureSource() != workspace && event.getDragboard().hasFiles()) {
                 event.acceptTransferModes(TransferMode.COPY);
@@ -91,15 +87,14 @@ public class MainController {
                     if (file.getName().endsWith(".png") || file.getName().endsWith(".jpg") || file.getName().endsWith(".jpeg")) {
                         Image image = new Image(file.toURI().toString());
                         ImageView imageView = new ImageView(image);
-                        imageView.setFitWidth(100); // Kích thước mặc định
+                        imageView.setFitWidth(100);
                         imageView.setFitHeight(100);
                         imageView.setX(event.getX());
                         imageView.setY(event.getY());
                         workspace.getChildren().add(imageView);
-                        makeElementMovable(imageView); // Làm cho element có thể di chuyển
+                        makeElementMovable(imageView);
                         success = true;
 
-                        // Lưu element vào chứng chỉ
                         if (currentCertificate != null) {
                             addElementToCertificate(file.getAbsolutePath(), "image", event.getX() - offsetX, event.getY() - offsetY, 100, 100);
                         }
@@ -110,9 +105,8 @@ public class MainController {
             event.consume();
         });
 
-        // Thêm sự kiện nhấp chuột vào workspace để bỏ chọn element
         workspace.setOnMouseClicked(event -> {
-            if (event.getTarget() == workspace) { // Chỉ bỏ chọn nếu nhấp vào vùng trống
+            if (event.getTarget() == workspace) {
                 deselectElement();
             }
         });
@@ -528,14 +522,13 @@ public class MainController {
         if (selectedFile != null) {
             Image image = new Image(selectedFile.toURI().toString());
             ImageView imageView = new ImageView(image);
-            imageView.setFitWidth(100); // Kích thước mặc định
+            imageView.setFitWidth(100);
             imageView.setFitHeight(100);
-            imageView.setX(50); // Vị trí mặc định
+            imageView.setX(50);
             imageView.setY(50);
             workspace.getChildren().add(imageView);
-            makeElementMovable(imageView); // Làm cho element có thể di chuyển
+            makeElementMovable(imageView);
 
-            // Lưu element vào chứng chỉ nếu có
             if (currentCertificate != null) {
                 addElementToCertificate(selectedFile.getAbsolutePath(), "image", 50 - offsetX, 50 - offsetY, 100, 100);
             }
@@ -590,15 +583,15 @@ public class MainController {
             if (currentCertificate != null) {
                 updateElementPositionInCertificate(element);
             }
-            // Cập nhật vị trí các neo nếu element đang được chọn
+
             if (selectedElement == element) {
                 updateAnchorsPosition(element);
             }
         });
         element.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 1) { // Nhấp một lần để chọn
+            if (event.getClickCount() == 1) {
                 selectElement(element);
-            } else if (event.getClickCount() == 2) { // Nhấp đúp để xóa
+            } else if (event.getClickCount() == 2) {
                 workspace.getChildren().remove(element);
                 if (currentCertificate != null) {
                     removeElementFromCertificate(element);
@@ -610,25 +603,24 @@ public class MainController {
 
     private void selectElement(ImageView element) {
         if (selectedElement != element) {
-            deselectElement(); // Bỏ chọn element trước đó
+            deselectElement();
             selectedElement = element;
-            showAnchors(element); // Hiển thị các neo
+            showAnchors(element);
         }
     }
 
     private void deselectElement() {
         if (selectedElement != null) {
-            hideAnchors(); // Ẩn các neo
+            hideAnchors();
             selectedElement = null;
         }
     }
 
     private void showAnchors(ImageView element) {
-        // Tạo 4 neo ở 4 góc
-        anchors[0] = createAnchor(element.getX(), element.getY(), "top-left"); // Góc trên-trái
-        anchors[1] = createAnchor(element.getX() + element.getFitWidth(), element.getY(), "top-right"); // Góc trên-phải
-        anchors[2] = createAnchor(element.getX(), element.getY() + element.getFitHeight(), "bottom-left"); // Góc dưới-trái
-        anchors[3] = createAnchor(element.getX() + element.getFitWidth(), element.getY() + element.getFitHeight(), "bottom-right"); // Góc dưới-phải
+        anchors[0] = createAnchor(element.getX(), element.getY(), "top-left");
+        anchors[1] = createAnchor(element.getX() + element.getFitWidth(), element.getY(), "top-right");
+        anchors[2] = createAnchor(element.getX(), element.getY() + element.getFitHeight(), "bottom-left");
+        anchors[3] = createAnchor(element.getX() + element.getFitWidth(), element.getY() + element.getFitHeight(), "bottom-right");
 
         workspace.getChildren().addAll(anchors);
     }
@@ -700,7 +692,6 @@ public class MainController {
                     break;
             }
 
-            // Đảm bảo kích thước không âm và không vượt quá giới hạn
             if (newWidth < 10) {
                 newWidth = 10;
                 if (position.contains("left")) {
@@ -714,7 +705,6 @@ public class MainController {
                 }
             }
 
-            // Đảm bảo element không vượt ra ngoài vùng chứng chỉ
             double maxWidth = 480;
             double maxHeight = 280;
             if (newWidth > maxWidth) newWidth = maxWidth;
@@ -733,14 +723,11 @@ public class MainController {
             selectedElement.setFitWidth(newWidth);
             selectedElement.setFitHeight(newHeight);
 
-            // Cập nhật vị trí và kích thước trong certificate
             updateElementPositionInCertificate(selectedElement);
             updateElementSizeInCertificate(selectedElement);
 
-            // Cập nhật vị trí các neo
             updateAnchorsPosition(selectedElement);
 
-            // Cập nhật lại điểm bắt đầu cho lần kéo tiếp theo
             anchor.setUserData(new double[]{event.getSceneX(), event.getSceneY()});
         });
 
@@ -757,15 +744,6 @@ public class MainController {
         return currentCertificate;
     }
 
-    public void setCurrentFont(String font) {
-        this.currentFont = font;
-        renderCertificate();
-    }
-
-    public String getCurrentFont() {
-        return currentFont;
-    }
-
     public void setFontProperties(String font, int size, boolean isBold, boolean isItalic, String alignment) {
         renderCertificate();
     }
@@ -773,7 +751,7 @@ public class MainController {
     private void renderCertificate() {
         workspace.getChildren().clear();
         textComponentsMap.clear();
-        deselectElement(); // Bỏ chọn element khi render lại
+        deselectElement();
 
         if (currentCertificate == null) {
             return;
