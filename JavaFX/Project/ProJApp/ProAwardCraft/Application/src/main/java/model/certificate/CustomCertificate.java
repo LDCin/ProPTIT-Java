@@ -36,7 +36,6 @@ public class CustomCertificate extends Certificate {
         return component != null ? component.getText().replace("Giải thưởng: ", "") : "";
     }
 
-
     public String getFrameColor() {
         return frameColor;
     }

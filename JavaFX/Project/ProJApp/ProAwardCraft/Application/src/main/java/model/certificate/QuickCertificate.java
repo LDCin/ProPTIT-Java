@@ -71,22 +71,6 @@ public class QuickCertificate extends Certificate {
         return component != null ? component.getText().replace("Giải thưởng: ", "") : "";
     }
 
-    public void setRecipientName(String recipientName) {
-        setTextComponent("recipient", recipientName);
-    }
-
-    public void setAwardName(String awardName) {
-        setTextComponent("award", "Giải thưởng: " + awardName);
-    }
-
-    public void setRecipientPosition(int x, int y) {
-        setTextPosition("recipient", x, y);
-    }
-
-    public void setAwardPosition(int x, int y) {
-        setTextPosition("award", x, y);
-    }
-
     public String getFrameColor() {
         return frameColor;
     }

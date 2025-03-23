@@ -112,6 +112,16 @@ public class MainController {
         });
     }
 
+    public void setCertificate(Certificate certificate) {
+        this.currentCertificate = certificate;
+        updateOffsets();
+        renderCertificate();
+    }
+
+    public CertificateManager getCertificateManager() {
+        return manager;
+    }
+
     private void updateOffsets() {
         double certWidth = 500;
         double certHeight = 300;
@@ -734,18 +744,154 @@ public class MainController {
         return anchor;
     }
 
-    public void setCertificate(Certificate certificate) {
-        this.currentCertificate = certificate;
-        updateOffsets();
-        renderCertificate();
-    }
-
     public Certificate getCurrentCertificate() {
         return currentCertificate;
     }
 
     public void setFontProperties(String font, int size, boolean isBold, boolean isItalic, String alignment) {
         renderCertificate();
+    }
+
+    private void makeTextEditable(Text text, String type) {
+        text.setCursor(Cursor.MOVE);
+        text.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                showTextEditDialog(text, type);
+            }
+        });
+
+        text.setOnMousePressed(event -> {
+            text.setUserData(new double[]{event.getSceneX() - text.getX(), event.getSceneY() - text.getY()});
+        });
+        text.setOnMouseDragged(event -> {
+            double[] offset = (double[]) text.getUserData();
+            text.setX(event.getSceneX() - offset[0]);
+            text.setY(event.getSceneY() - offset[1]);
+            updateCertificatePosition(type, (int) (text.getX() - offsetX), (int) (text.getY() - offsetY));
+        });
+    }
+
+    private void showTextEditDialog(Text text, String type) {
+        TextComponent component = currentCertificate.getTextComponent(type);
+        if (component == null) {
+            showAlert("Lỗi", "Không tìm thấy thành phần văn bản!");
+            return;
+        }
+
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Chỉnh sửa văn bản và font");
+        dialog.setHeaderText("Chỉnh sửa nội dung và thuộc tính font cho: " + type);
+
+        ButtonType applyButtonType = new ButtonType("Áp dụng", ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(applyButtonType, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        TextField textField = new TextField(text.getText());
+        grid.add(new Label("Nội dung:"), 0, 0);
+        grid.add(textField, 1, 0);
+
+        Label fontSearchLabel = new Label("Tìm kiếm font:");
+        TextField fontSearchField = new TextField();
+        fontSearchField.setPromptText("Nhập tên font để tìm kiếm...");
+        grid.add(fontSearchLabel, 0, 1);
+        grid.add(fontSearchField, 1, 1);
+
+        Label fontNameLabel = new Label("Tên font:");
+        ComboBox<String> fontNameComboBox = new ComboBox<>();
+        String[] fontNames = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+        fontNameComboBox.getItems().addAll(fontNames);
+        fontNameComboBox.setValue(component.getFontName());
+        grid.add(fontNameLabel, 0, 2);
+        grid.add(fontNameComboBox, 1, 2);
+
+        fontSearchField.textProperty().addListener((obs, oldValue, newValue) -> {
+            fontNameComboBox.getItems().clear();
+            String searchText = newValue.trim().toLowerCase();
+            if (searchText.isEmpty()) {
+                fontNameComboBox.getItems().addAll(fontNames);
+            } else {
+                for (String fontName : fontNames) {
+                    if (fontName.toLowerCase().contains(searchText)) {
+                        fontNameComboBox.getItems().add(fontName);
+                    }
+                }
+            }
+            if (fontNameComboBox.getItems().isEmpty()) {
+                fontNameComboBox.setPromptText("Không tìm thấy font nào!");
+            } else {
+                fontNameComboBox.setPromptText("Chọn font...");
+                if (fontNameComboBox.getItems().contains(component.getFontName())) {
+                    fontNameComboBox.setValue(component.getFontName());
+                } else {
+                    fontNameComboBox.setValue(null);
+                }
+            }
+        });
+
+        Slider fontSizeSlider = new Slider(8, 72, component.getFontSize());
+        fontSizeSlider.setShowTickLabels(true);
+        fontSizeSlider.setShowTickMarks(true);
+        fontSizeSlider.setMajorTickUnit(8);
+        fontSizeSlider.setMinorTickCount(1);
+        Label fontSizeLabel = new Label(String.valueOf(component.getFontSize()));
+        fontSizeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            fontSizeLabel.setText(String.valueOf(newVal.intValue()));
+        });
+        grid.add(new Label("Kích thước font:"), 0, 3);
+        grid.add(fontSizeSlider, 1, 3);
+        grid.add(fontSizeLabel, 2, 3);
+
+        CheckBox boldCheckBox = new CheckBox("In đậm");
+        boldCheckBox.setSelected(component.isBold());
+        CheckBox italicCheckBox = new CheckBox("In nghiêng");
+        italicCheckBox.setSelected(component.isItalic());
+        HBox styleBox = new HBox(10, boldCheckBox, italicCheckBox);
+        grid.add(new Label("Kiểu chữ:"), 0, 4);
+        grid.add(styleBox, 1, 4);
+
+        ComboBox<String> alignmentComboBox = new ComboBox<>();
+        alignmentComboBox.getItems().addAll("Trái", "Giữa", "Phải");
+        alignmentComboBox.setValue(component.getAlignment());
+        grid.add(new Label("Căn chỉnh:"), 0, 5);
+        grid.add(alignmentComboBox, 1, 5);
+
+        dialog.getDialogPane().setContent(grid);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == applyButtonType) {
+            String newText = textField.getText().trim();
+            String newFont = fontNameComboBox.getValue();
+            int newSize = (int) fontSizeSlider.getValue();
+            boolean newBold = boldCheckBox.isSelected();
+            boolean newItalic = italicCheckBox.isSelected();
+            String newAlignment = alignmentComboBox.getValue();
+
+            if (newText.isEmpty()) {
+                showAlert("Lỗi", "Nội dung không được để trống!");
+                return;
+            }
+            if (newFont == null || newFont.isEmpty()) {
+                showAlert("Lỗi", "Vui lòng chọn font!");
+                return;
+            }
+
+            component.setText(newText);
+            component.setFont(newFont, newSize, newBold, newItalic, newAlignment);
+            renderCertificate();
+        }
+    }
+
+    private void updateCertificatePosition(String type, int x, int y) {
+        if (currentCertificate != null) {
+            TextComponent component = currentCertificate.getTextComponent(type);
+            if (component != null) {
+                component.setX(x);
+                component.setY(y);
+            }
+        }
     }
 
     private void renderCertificate() {
@@ -895,148 +1041,6 @@ public class MainController {
         }
     }
 
-    private void makeTextEditable(Text text, String type) {
-        text.setCursor(Cursor.MOVE);
-        text.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) {
-                showTextEditDialog(text, type);
-            }
-        });
-
-        text.setOnMousePressed(event -> {
-            text.setUserData(new double[]{event.getSceneX() - text.getX(), event.getSceneY() - text.getY()});
-        });
-        text.setOnMouseDragged(event -> {
-            double[] offset = (double[]) text.getUserData();
-            text.setX(event.getSceneX() - offset[0]);
-            text.setY(event.getSceneY() - offset[1]);
-            updateCertificatePosition(type, (int) (text.getX() - offsetX), (int) (text.getY() - offsetY));
-        });
-    }
-
-    private void showTextEditDialog(Text text, String type) {
-        TextComponent component = currentCertificate.getTextComponent(type);
-        if (component == null) {
-            showAlert("Lỗi", "Không tìm thấy thành phần văn bản!");
-            return;
-        }
-
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Chỉnh sửa văn bản và font");
-        dialog.setHeaderText("Chỉnh sửa nội dung và thuộc tính font cho: " + type);
-
-        ButtonType applyButtonType = new ButtonType("Áp dụng", ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(applyButtonType, ButtonType.CANCEL);
-
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-
-        TextField textField = new TextField(text.getText());
-        grid.add(new Label("Nội dung:"), 0, 0);
-        grid.add(textField, 1, 0);
-
-        Label fontSearchLabel = new Label("Tìm kiếm font:");
-        TextField fontSearchField = new TextField();
-        fontSearchField.setPromptText("Nhập tên font để tìm kiếm...");
-        grid.add(fontSearchLabel, 0, 1);
-        grid.add(fontSearchField, 1, 1);
-
-        Label fontNameLabel = new Label("Tên font:");
-        ComboBox<String> fontNameComboBox = new ComboBox<>();
-        String[] fontNames = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-        fontNameComboBox.getItems().addAll(fontNames);
-        fontNameComboBox.setValue(component.getFontName());
-        grid.add(fontNameLabel, 0, 2);
-        grid.add(fontNameComboBox, 1, 2);
-
-        fontSearchField.textProperty().addListener((obs, oldValue, newValue) -> {
-            fontNameComboBox.getItems().clear();
-            String searchText = newValue.trim().toLowerCase();
-            if (searchText.isEmpty()) {
-                fontNameComboBox.getItems().addAll(fontNames);
-            } else {
-                for (String fontName : fontNames) {
-                    if (fontName.toLowerCase().contains(searchText)) {
-                        fontNameComboBox.getItems().add(fontName);
-                    }
-                }
-            }
-            if (fontNameComboBox.getItems().isEmpty()) {
-                fontNameComboBox.setPromptText("Không tìm thấy font nào!");
-            } else {
-                fontNameComboBox.setPromptText("Chọn font...");
-                if (fontNameComboBox.getItems().contains(component.getFontName())) {
-                    fontNameComboBox.setValue(component.getFontName());
-                } else {
-                    fontNameComboBox.setValue(null);
-                }
-            }
-        });
-
-        Slider fontSizeSlider = new Slider(8, 72, component.getFontSize());
-        fontSizeSlider.setShowTickLabels(true);
-        fontSizeSlider.setShowTickMarks(true);
-        fontSizeSlider.setMajorTickUnit(8);
-        fontSizeSlider.setMinorTickCount(1);
-        Label fontSizeLabel = new Label(String.valueOf(component.getFontSize()));
-        fontSizeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-            fontSizeLabel.setText(String.valueOf(newVal.intValue()));
-        });
-        grid.add(new Label("Kích thước font:"), 0, 3);
-        grid.add(fontSizeSlider, 1, 3);
-        grid.add(fontSizeLabel, 2, 3);
-
-        CheckBox boldCheckBox = new CheckBox("In đậm");
-        boldCheckBox.setSelected(component.isBold());
-        CheckBox italicCheckBox = new CheckBox("In nghiêng");
-        italicCheckBox.setSelected(component.isItalic());
-        HBox styleBox = new HBox(10, boldCheckBox, italicCheckBox);
-        grid.add(new Label("Kiểu chữ:"), 0, 4);
-        grid.add(styleBox, 1, 4);
-
-        ComboBox<String> alignmentComboBox = new ComboBox<>();
-        alignmentComboBox.getItems().addAll("Trái", "Giữa", "Phải");
-        alignmentComboBox.setValue(component.getAlignment());
-        grid.add(new Label("Căn chỉnh:"), 0, 5);
-        grid.add(alignmentComboBox, 1, 5);
-
-        dialog.getDialogPane().setContent(grid);
-
-        Optional<ButtonType> result = dialog.showAndWait();
-        if (result.isPresent() && result.get() == applyButtonType) {
-            String newText = textField.getText().trim();
-            String newFont = fontNameComboBox.getValue();
-            int newSize = (int) fontSizeSlider.getValue();
-            boolean newBold = boldCheckBox.isSelected();
-            boolean newItalic = italicCheckBox.isSelected();
-            String newAlignment = alignmentComboBox.getValue();
-
-            if (newText.isEmpty()) {
-                showAlert("Lỗi", "Nội dung không được để trống!");
-                return;
-            }
-            if (newFont == null || newFont.isEmpty()) {
-                showAlert("Lỗi", "Vui lòng chọn font!");
-                return;
-            }
-
-            component.setText(newText);
-            component.setFont(newFont, newSize, newBold, newItalic, newAlignment);
-            renderCertificate();
-        }
-    }
-
-    private void updateCertificatePosition(String type, int x, int y) {
-        if (currentCertificate != null) {
-            TextComponent component = currentCertificate.getTextComponent(type);
-            if (component != null) {
-                component.setX(x);
-                component.setY(y);
-            }
-        }
-    }
-
     private BufferedImage generateImageFromWorkspace() {
         int width = 500;
         int height = 300;
@@ -1102,9 +1106,5 @@ public class MainController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
-    }
-
-    public CertificateManager getCertificateManager() {
-        return manager;
     }
 }
